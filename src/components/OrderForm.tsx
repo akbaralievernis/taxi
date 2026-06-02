@@ -3,14 +3,18 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  MapPin, Calendar, Users, Briefcase, Car, MessageSquare,
-  Phone, User, CreditCard, CheckCircle2, Loader2, ArrowRight,
-  Wallet, Clock, Sparkles, Tag, X, Hash
+  Calendar, Users, Briefcase, MessageSquare,
+  Phone, User, CreditCard, CheckCircle2, Loader2, ArrowRight, ArrowLeft,
+  Wallet, Clock, Sparkles, Tag, X, Hash, MapPin, BadgeCheck
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useLocale } from '@/lib/LocaleContext';
 import { CarClass, PaymentMethod } from '@/types';
 import { cn, formatPrice } from '@/lib/utils';
+import StepIndicator from './booking/StepIndicator';
+import VehicleCard from './booking/VehicleCard';
+import FindingDriver from './booking/FindingDriver';
+import AddressInput from './booking/AddressInput';
 
 const cities = ['Бишкек', 'Ош', 'Каракол', 'Джалал-Абад', 'Нарын', 'Талас', 'Баткен', 'Чолпон-Ата'];
 
@@ -29,29 +33,44 @@ interface OrderFormData {
   paymentMethod: PaymentMethod;
   comment: string;
 }
-
-const initialData: OrderFormData = {
-  customerName: '',
-  customerPhone: '+996 ',
-  fromCity: 'Бишкек',
-  fromAddress: '',
-  toCity: 'Бишкек',
-  toAddress: '',
-  whenType: 'now',
-  scheduledAt: '',
-  passengers: 1,
-  luggage: 0,
-  carClass: 'economy',
-  paymentMethod: 'cash',
-  comment: '',
+const CLASS_MULTIPLIERS: Record<CarClass, number> = {
+  economy: 1.0,
+  comfort: 1.25,
+  business: 1.9,
+  minivan: 1.7,
+  cargo: 1.5,
 };
 
 const selectedBtn = 'bg-gradient-to-r from-primary-500 to-purple-500 border-transparent text-white shadow-glow-sm';
-const idleBtn = 'bg-surface-elevated border-border text-ink-muted hover:bg-surface hover:border-primary-400/40 hover:text-ink';
+const idleBtn = 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-900/40 hover:border-slate-700 hover:text-white';
 
-export default function OrderForm() {
+const initialData = {
+  customerName: '',
+  customerPhone: '+996 ',
+  fromAddress: '',
+  toAddress: '',
+  whenType: 'now' as const,
+  scheduledAt: '',
+  passengers: 1,
+  luggage: 0,
+  carClass: 'economy' as CarClass,
+  paymentMethod: 'cash' as PaymentMethod,
+  comment: '',
+};
+
+interface OrderFormProps {
+  defaultFromCity?: string;
+  defaultToCity?: string;
+}
+
+export default function OrderForm({ defaultFromCity = 'Бишкек', defaultToCity = 'Бишкек' }: OrderFormProps) {
   const { t } = useLocale();
-  const [data, setData] = useState<OrderFormData>(initialData);
+  const [step, setStep] = useState(1);
+  const [data, setData] = useState<OrderFormData>({
+    ...initialData,
+    fromCity: defaultFromCity,
+    toCity: defaultToCity,
+  });
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState<{ id: string; price: number } | null>(null);
   const [estimatedPrice, setEstimatedPrice] = useState<number>(0);
@@ -114,46 +133,28 @@ export default function OrderForm() {
     calc();
   }, [data.fromCity, data.toCity, data.carClass, data.whenType, data.scheduledAt]);
 
-  const update = <K extends keyof OrderFormData>(key: K, value: OrderFormData[K]) => {
+  function update<K extends keyof OrderFormData>(key: K, value: OrderFormData[K]) {
     setData(prev => ({ ...prev, [key]: value }));
+  }
+
+  const getPriceForClass = (cls: CarClass) => {
+    if (!estimatedPrice) return 0;
+    const currentMultiplier = CLASS_MULTIPLIERS[data.carClass];
+    const base = estimatedPrice / currentMultiplier;
+    return Math.round(base * CLASS_MULTIPLIERS[cls]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!data.customerName.trim() || data.customerPhone.length < 10) {
-      toast.error('Заполните имя и телефон');
-      return;
-    }
-    if (!data.fromAddress.trim() || !data.toAddress.trim()) {
-      toast.error('Укажите адреса');
-      return;
-    }
-    if (data.whenType === 'later' && !data.scheduledAt) {
-      toast.error('Укажите время поездки');
-      return;
-    }
-
+  const handleSubmit = async () => {
     setSubmitting(true);
     try {
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          customerName: data.customerName,
-          customerPhone: data.customerPhone,
-          fromCity: data.fromCity,
-          fromAddress: data.fromAddress,
-          toCity: data.toCity,
-          toAddress: data.toAddress,
-          scheduledAt: data.whenType === 'now' ? new Date().toISOString() : data.scheduledAt,
-          passengers: data.passengers,
-          luggage: data.luggage,
-          carClass: data.carClass,
-          paymentMethod: data.paymentMethod,
-          comment: data.comment,
+          ...data,
           estimatedPrice: finalPrice,
           promoCode: promoApplied?.code,
+          scheduledAt: data.whenType === 'now' ? new Date().toISOString() : data.scheduledAt,
         }),
       });
 
@@ -167,23 +168,56 @@ export default function OrderForm() {
       setSubmitting(false);
     }
   };
-
   const resetForm = () => {
-    setData(initialData);
+    setData({
+      ...initialData,
+      fromCity: defaultFromCity,
+      toCity: defaultToCity,
+    });
     setSuccess(null);
     setPromoApplied(null);
     setPromoCode('');
+    setStep(1);
   };
+
+  const isStep1Valid = data.fromAddress.trim().length > 2 && data.toAddress.trim().length > 2;
+  const isStep3Valid =
+    data.customerName.trim().length > 1 &&
+    data.customerPhone.trim().replace(/\D/g, '').length >= 9 &&
+    (data.whenType === 'now' || !!data.scheduledAt);
+
+  const nextStep = () => {
+    if (step === 1 && !isStep1Valid) {
+      toast.error('Заполните адреса отправления и назначения');
+      return;
+    }
+    if (step === 3 && !isStep3Valid) {
+      toast.error('Заполните имя, телефон и время поездки');
+      return;
+    }
+    setStep(prev => prev + 1);
+  };
+
+  const prevStep = () => setStep(prev => prev - 1);
+
+  if (submitting) {
+    return (
+      <div className="glass-card-strong p-8 md:p-12 max-w-xl mx-auto shadow-depth-md">
+        <FindingDriver />
+      </div>
+    );
+  }
 
   if (success) {
     return (
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass-card p-8 md:p-12 text-center max-w-2xl mx-auto relative overflow-hidden"
+        className="glass-card p-8 md:p-12 text-center max-w-2xl mx-auto relative overflow-hidden shadow-depth-md border-primary-500/10"
+        style={{ background: 'rgba(12, 14, 28, 0.75)' }}
       >
-        <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-mint-500/20 blur-3xl" />
-        <div className="absolute -bottom-20 -right-20 w-64 h-64 rounded-full bg-primary-500/20 blur-3xl" />
+        <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-mint-500/10 blur-3xl" />
+        <div className="absolute -bottom-20 -right-20 w-64 h-64 rounded-full bg-primary-500/10 blur-3xl" />
 
         <div className="relative">
           <motion.div
@@ -195,30 +229,34 @@ export default function OrderForm() {
             <CheckCircle2 className="w-14 h-14 text-white" />
           </motion.div>
 
-          <h3 className="text-3xl md:text-4xl font-bold mb-3 gradient-text">{t.order.success}</h3>
-          <p className="text-ink-muted mb-8 text-lg">{t.order.successText}</p>
+          <h3 className="text-3xl md:text-4xl font-bold mb-3 text-white font-display">{t.order.success}</h3>
+          <p className="text-slate-400 mb-8 text-base max-w-md mx-auto">{t.order.successText}</p>
 
-          <div className="glass-card p-5 mb-4 inline-flex items-center gap-3">
-            <Hash className="w-5 h-5 text-primary-500" />
-            <div className="text-left">
-              <div className="text-xs text-ink-subtle uppercase tracking-wider mb-0.5">{t.order.orderNumber}</div>
-              <div className="text-lg font-mono font-bold text-ink">{success.id}</div>
+          <div className="grid sm:grid-cols-2 gap-4 max-w-md mx-auto mb-8">
+            <div className="glass-2 p-4 rounded-xl border border-slate-800 text-left">
+              <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mb-1">{t.order.orderNumber}</div>
+              <div className="text-base font-mono font-bold text-white flex items-center gap-1.5">
+                <Hash className="w-4 h-4 text-primary-400" />
+                {success.id}
+              </div>
+            </div>
+
+            <div className="glass-2 p-4 rounded-xl border border-slate-800 text-left">
+              <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mb-1">{t.order.estimatedPrice}</div>
+              <div className="text-lg font-bold text-primary-400 font-display">
+                {formatPrice(success.price)}
+              </div>
             </div>
           </div>
 
-          <div className="glass-card p-5 mb-6">
-            <div className="text-sm text-ink-muted mb-1">{t.order.estimatedPrice}</div>
-            <div className="text-4xl font-bold gradient-text">{formatPrice(success.price)}</div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
             <a
               href={`/track`}
-              className="btn-secondary inline-flex items-center gap-2 justify-center"
+              className="btn-ghost flex items-center gap-2 justify-center h-12 px-6 text-white border-slate-800 hover:bg-slate-900/60"
             >
               Отследить заказ
             </a>
-            <button onClick={resetForm} className="btn-primary inline-flex items-center gap-2 justify-center">
+            <button onClick={resetForm} className="btn-primary flex items-center gap-2 justify-center h-12 px-6">
               {t.order.newOrder}
               <ArrowRight className="w-4 h-4" />
             </button>
@@ -228,365 +266,458 @@ export default function OrderForm() {
     );
   }
 
+  const stepsLabels = ['Маршрут', 'Автомобиль', 'Детали', 'Подтверждение'];
+
   return (
-    <motion.form
-      onSubmit={handleSubmit}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="glass-card-strong p-4 md:p-6 lg:p-8 max-w-4xl mx-auto shadow-glow-sm pb-6 md:pb-8"
+    <div
+      className="glass-card-strong p-5 md:p-8 max-w-4xl mx-auto shadow-depth-md relative overflow-hidden"
+      style={{ background: 'rgba(12, 14, 28, 0.65)' }}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-        {/* Имя */}
-        <div>
-          <label className="label-field">
-            <User className="w-4 h-4 inline mr-2 text-primary-500" />
-            {t.order.name}
-          </label>
-          <input
-            type="text"
-            value={data.customerName}
-            onChange={(e) => update('customerName', e.target.value)}
-            placeholder={t.order.namePlaceholder}
-            className="input-field"
-            required
-          />
-        </div>
+      <StepIndicator currentStep={step} steps={stepsLabels} />
 
-        {/* Телефон */}
-        <div>
-          <label className="label-field">
-            <Phone className="w-4 h-4 inline mr-2 text-primary-500" />
-            {t.order.phone}
-          </label>
-          <input
-            type="tel"
-            value={data.customerPhone}
-            onChange={(e) => update('customerPhone', e.target.value)}
-            placeholder={t.order.phonePlaceholder}
-            className="input-field"
-            required
-          />
-        </div>
-
-        {/* Город ОТКУДА */}
-        <div>
-          <label className="label-field">
-            <MapPin className="w-4 h-4 inline mr-2 text-mint-500" />
-            {t.order.fromCity}
-          </label>
-          <select
-            value={data.fromCity}
-            onChange={(e) => update('fromCity', e.target.value)}
-            className="input-field appearance-none cursor-pointer"
-          >
-            {cities.map(c => <option key={c} value={c} className="bg-surface-elevated text-ink">{c}</option>)}
-          </select>
-        </div>
-
-        {/* Город КУДА */}
-        <div>
-          <label className="label-field">
-            <MapPin className="w-4 h-4 inline mr-2 text-pink-500" />
-            {t.order.toCity}
-          </label>
-          <select
-            value={data.toCity}
-            onChange={(e) => update('toCity', e.target.value)}
-            className="input-field appearance-none cursor-pointer"
-          >
-            {cities.map(c => <option key={c} value={c} className="bg-surface-elevated text-ink">{c}</option>)}
-          </select>
-        </div>
-
-        {/* Адрес ОТКУДА */}
-        <div>
-          <label className="label-field">{t.order.fromAddress}</label>
-          <input
-            type="text"
-            value={data.fromAddress}
-            onChange={(e) => update('fromAddress', e.target.value)}
-            placeholder={t.order.fromAddressPlaceholder}
-            className="input-field"
-            required
-          />
-        </div>
-
-        {/* Адрес КУДА */}
-        <div>
-          <label className="label-field">{t.order.toAddress}</label>
-          <input
-            type="text"
-            value={data.toAddress}
-            onChange={(e) => update('toAddress', e.target.value)}
-            placeholder={t.order.toAddressPlaceholder}
-            className="input-field"
-            required
-          />
-        </div>
-
-        {/* Когда */}
-        <div className="md:col-span-2">
-          <label className="label-field">
-            <Calendar className="w-4 h-4 inline mr-2 text-primary-500" />
-            {t.order.when}
-          </label>
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <button
-              type="button"
-              onClick={() => update('whenType', 'now')}
-              className={cn(
-                'py-3 rounded-xl border transition-all flex items-center justify-center gap-2 font-medium',
-                data.whenType === 'now' ? selectedBtn : idleBtn
-              )}
+      <div className="min-h-[300px] mt-4">
+        <AnimatePresence mode="wait">
+          {step === 1 && (
+            <motion.div
+              key="step1"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
             >
-              <Clock className="w-4 h-4" />
-              {t.order.whenNow}
-            </button>
-            <button
-              type="button"
-              onClick={() => update('whenType', 'later')}
-              className={cn(
-                'py-3 rounded-xl border transition-all flex items-center justify-center gap-2 font-medium',
-                data.whenType === 'later' ? selectedBtn : idleBtn
-              )}
-            >
-              <Calendar className="w-4 h-4" />
-              {t.order.whenLater}
-            </button>
-          </div>
-
-          <AnimatePresence>
-            {data.whenType === 'later' && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-              >
-                <input
-                  type="datetime-local"
-                  value={data.scheduledAt}
-                  onChange={(e) => update('scheduledAt', e.target.value)}
-                  min={new Date().toISOString().slice(0, 16)}
-                  className="input-field"
-                  required
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Пассажиры */}
-        <div>
-          <label className="label-field">
-            <Users className="w-4 h-4 inline mr-2 text-primary-500" />
-            {t.order.passengers}
-          </label>
-          <div className="flex items-center gap-3 glass-card p-1">
-            <button
-              type="button"
-              onClick={() => update('passengers', Math.max(1, data.passengers - 1))}
-              className="w-10 h-10 rounded-lg bg-surface-elevated hover:bg-primary-500/10 hover:text-primary-500 transition font-bold text-lg"
-            >
-              −
-            </button>
-            <div className="flex-1 text-center text-xl font-bold text-ink">{data.passengers}</div>
-            <button
-              type="button"
-              onClick={() => update('passengers', Math.min(8, data.passengers + 1))}
-              className="w-10 h-10 rounded-lg bg-surface-elevated hover:bg-primary-500/10 hover:text-primary-500 transition font-bold text-lg"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        {/* Багаж */}
-        <div>
-          <label className="label-field">
-            <Briefcase className="w-4 h-4 inline mr-2 text-primary-500" />
-            {t.order.luggage}
-          </label>
-          <div className="flex items-center gap-3 glass-card p-1">
-            <button
-              type="button"
-              onClick={() => update('luggage', Math.max(0, data.luggage - 1))}
-              className="w-10 h-10 rounded-lg bg-surface-elevated hover:bg-primary-500/10 hover:text-primary-500 transition font-bold text-lg"
-            >
-              −
-            </button>
-            <div className="flex-1 text-center text-xl font-bold text-ink">{data.luggage}</div>
-            <button
-              type="button"
-              onClick={() => update('luggage', Math.min(10, data.luggage + 1))}
-              className="w-10 h-10 rounded-lg bg-surface-elevated hover:bg-primary-500/10 hover:text-primary-500 transition font-bold text-lg"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        {/* Класс авто */}
-        <div className="md:col-span-2">
-          <label className="label-field">
-            <Car className="w-4 h-4 inline mr-2 text-primary-500" />
-            {t.order.carClass}
-          </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
-            {(['economy', 'comfort', 'business', 'minivan', 'cargo'] as CarClass[]).map(cls => (
-              <button
-                key={cls}
-                type="button"
-                onClick={() => update('carClass', cls)}
-                className={cn(
-                  'py-3 px-2 rounded-xl border transition-all text-sm font-medium',
-                  data.carClass === cls ? selectedBtn : idleBtn
-                )}
-              >
-                {t.tariffs.classes[cls].name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Оплата */}
-        <div className="md:col-span-2">
-          <label className="label-field">
-            <CreditCard className="w-4 h-4 inline mr-2 text-primary-500" />
-            {t.order.payment}
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => update('paymentMethod', 'cash')}
-              className={cn(
-                'py-3 rounded-xl border transition-all flex items-center justify-center gap-2 font-medium',
-                data.paymentMethod === 'cash' ? selectedBtn : idleBtn
-              )}
-            >
-              <Wallet className="w-4 h-4" />
-              {t.order.cash}
-            </button>
-            <button
-              type="button"
-              onClick={() => update('paymentMethod', 'card')}
-              className={cn(
-                'py-3 rounded-xl border transition-all flex items-center justify-center gap-2 font-medium',
-                data.paymentMethod === 'card' ? selectedBtn : idleBtn
-              )}
-            >
-              <CreditCard className="w-4 h-4" />
-              {t.order.card}
-            </button>
-          </div>
-        </div>
-
-        {/* Комментарий */}
-        <div className="md:col-span-2">
-          <label className="label-field">
-            <MessageSquare className="w-4 h-4 inline mr-2 text-primary-500" />
-            {t.order.comment}
-          </label>
-          <textarea
-            value={data.comment}
-            onChange={(e) => update('comment', e.target.value)}
-            placeholder={t.order.commentPlaceholder}
-            rows={3}
-            className="input-field resize-none"
-          />
-        </div>
-      </div>
-
-      {/* Промокод */}
-      <div className="mt-5">
-        <label className="label-field">
-          <Tag className="w-4 h-4 inline mr-2 text-mint-500" />
-          Промокод (если есть)
-        </label>
-        {promoApplied ? (
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="flex items-center gap-2 p-3 rounded-xl bg-mint-500/10 border border-mint-500/40"
-          >
-            <CheckCircle2 className="w-5 h-5 text-mint-500" />
-            <span className="flex-1 font-mono font-semibold text-mint-600 dark:text-mint-400">{promoApplied.code}</span>
-            <span className="text-mint-600 dark:text-mint-400 text-sm font-semibold">−{promoApplied.discount}%</span>
-            <button type="button" onClick={removePromo} className="p-1 hover:bg-surface-elevated rounded transition">
-              <X className="w-4 h-4 text-ink-muted" />
-            </button>
-          </motion.div>
-        ) : (
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={promoCode}
-              onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-              placeholder="WELCOME10"
-              className="input-field font-mono flex-1"
-            />
-            <button
-              type="button"
-              onClick={applyPromo}
-              disabled={promoChecking || !promoCode.trim()}
-              className="px-5 py-3 rounded-xl bg-surface-elevated hover:bg-primary-500 hover:text-white border border-border transition disabled:opacity-50 font-medium"
-            >
-              {promoChecking ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Применить'}
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Цена и кнопка */}
-      <motion.div
-        layout
-        className="mt-6 p-6 rounded-2xl bg-gradient-to-br from-primary-500/15 via-purple-500/10 to-accent-500/10 border border-primary-500/30 relative overflow-hidden"
-      >
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary-500/20 rounded-full blur-3xl" />
-
-        <div className="relative">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <div className="flex items-center gap-2 text-ink-muted text-sm mb-2">
-                <Sparkles className="w-4 h-4 text-primary-500" />
-                {t.order.estimatedPrice}
-              </div>
-              {promoApplied && estimatedPrice > 0 && (
-                <div className="text-lg text-ink-subtle line-through">{formatPrice(estimatedPrice)}</div>
-              )}
-              <div className="text-3xl md:text-5xl font-bold gradient-text">
-                {formatPrice(finalPrice)}
-              </div>
-              {promoApplied && (
-                <div className="text-sm text-mint-600 dark:text-mint-400 mt-2 font-medium">
-                  Скидка {promoApplied.code}: −{formatPrice(estimatedPrice - finalPrice)}
+              <div className="grid md:grid-cols-2 gap-5">
+                <div>
+                  <label className="label-field">
+                    <MapPin className="w-4 h-4 inline mr-2 text-primary-500" />
+                    {t.order.fromCity}
+                  </label>
+                  <select
+                    value={data.fromCity}
+                    onChange={(e) => update('fromCity', e.target.value)}
+                    className="input-field appearance-none cursor-pointer"
+                    style={{ background: 'rgba(12, 14, 28, 0.45)' }}
+                  >
+                    {cities.map(c => <option key={c} value={c} className="bg-slate-950 text-white">{c}</option>)}
+                  </select>
                 </div>
-              )}
-            </div>
-          </div>
 
-          <motion.button
-            type="submit"
-            disabled={submitting}
-            whileHover={{ scale: submitting ? 1 : 1.02 }}
-            whileTap={{ scale: submitting ? 1 : 0.98 }}
-            className="btn-primary w-full text-lg flex items-center justify-center gap-2 disabled:opacity-60 py-4"
+                <div>
+                  <label className="label-field">
+                    <MapPin className="w-4 h-4 inline mr-2 text-pink-500" />
+                    {t.order.toCity}
+                  </label>
+                  <select
+                    value={data.toCity}
+                    onChange={(e) => update('toCity', e.target.value)}
+                    className="input-field appearance-none cursor-pointer"
+                    style={{ background: 'rgba(12, 14, 28, 0.45)' }}
+                  >
+                    {cities.map(c => <option key={c} value={c} className="bg-slate-950 text-white">{c}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-5">
+                <AddressInput
+                  label={t.order.fromAddress}
+                  value={data.fromAddress}
+                  city={data.fromCity}
+                  onChange={(val) => update('fromAddress', val)}
+                  placeholder={t.order.fromAddressPlaceholder}
+                  iconColor="text-primary-500"
+                />
+                <AddressInput
+                  label={t.order.toAddress}
+                  value={data.toAddress}
+                  city={data.toCity}
+                  onChange={(val) => update('toAddress', val)}
+                  placeholder={t.order.toAddressPlaceholder}
+                  iconColor="text-pink-500"
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {step === 2 && (
+            <motion.div
+              key="step2"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-semibold text-slate-300">Выберите класс поездки:</h4>
+                <span className="text-xs text-slate-500">Цены ориентировочные</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {([
+                  { key: 'economy', name: t.tariffs.classes.economy.name, desc: t.tariffs.classes.economy.desc },
+                  { key: 'comfort', name: t.tariffs.classes.comfort.name, desc: t.tariffs.classes.comfort.desc },
+                  { key: 'business', name: t.tariffs.classes.business.name, desc: t.tariffs.classes.business.desc },
+                  { key: 'minivan', name: t.tariffs.classes.minivan.name, desc: t.tariffs.classes.minivan.desc },
+                  { key: 'cargo', name: t.tariffs.classes.cargo.name, desc: t.tariffs.classes.cargo.desc },
+                ] as { key: CarClass; name: string; desc: string }[]).map((v) => (
+                  <VehicleCard
+                    key={v.key}
+                    cls={v.key}
+                    selected={data.carClass === v.key}
+                    name={v.name}
+                    desc={v.desc}
+                    onClick={() => update('carClass', v.key)}
+                    price={getPriceForClass(v.key)}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {step === 3 && (
+            <motion.div
+              key="step3"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div className="grid md:grid-cols-2 gap-5">
+                <div>
+                  <label className="label-field">
+                    <User className="w-4 h-4 inline mr-2 text-primary-500" />
+                    {t.order.name}
+                  </label>
+                  <input
+                    type="text"
+                    value={data.customerName}
+                    onChange={(e) => update('customerName', e.target.value)}
+                    placeholder={t.order.namePlaceholder}
+                    className="input-field"
+                    style={{ background: 'rgba(12, 14, 28, 0.45)' }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="label-field">
+                    <Phone className="w-4 h-4 inline mr-2 text-primary-500" />
+                    {t.order.phone}
+                  </label>
+                  <input
+                    type="tel"
+                    value={data.customerPhone}
+                    onChange={(e) => update('customerPhone', e.target.value)}
+                    placeholder={t.order.phonePlaceholder}
+                    className="input-field"
+                    style={{ background: 'rgba(12, 14, 28, 0.45)' }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="label-field">
+                    <Users className="w-4 h-4 inline mr-2 text-primary-500" />
+                    {t.order.passengers}
+                  </label>
+                  <div className="flex items-center gap-3 glass-2 p-1.5 border border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => update('passengers', Math.max(1, data.passengers - 1))}
+                      className="w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 hover:bg-primary-500/10 hover:text-primary-500 transition font-bold text-lg text-white"
+                    >
+                      −
+                    </button>
+                    <div className="flex-1 text-center text-lg font-bold text-white">{data.passengers}</div>
+                    <button
+                      type="button"
+                      onClick={() => update('passengers', Math.min(8, data.passengers + 1))}
+                      className="w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 hover:bg-primary-500/10 hover:text-primary-500 transition font-bold text-lg text-white"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="label-field">
+                    <Briefcase className="w-4 h-4 inline mr-2 text-primary-500" />
+                    {t.order.luggage}
+                  </label>
+                  <div className="flex items-center gap-3 glass-2 p-1.5 border border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => update('luggage', Math.max(0, data.luggage - 1))}
+                      className="w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 hover:bg-primary-500/10 hover:text-primary-500 transition font-bold text-lg text-white"
+                    >
+                      −
+                    </button>
+                    <div className="flex-1 text-center text-lg font-bold text-white">{data.luggage}</div>
+                    <button
+                      type="button"
+                      onClick={() => update('luggage', Math.min(10, data.luggage + 1))}
+                      className="w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 hover:bg-primary-500/10 hover:text-primary-500 transition font-bold text-lg text-white"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="label-field">
+                    <CreditCard className="w-4 h-4 inline mr-2 text-primary-500" />
+                    {t.order.payment}
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => update('paymentMethod', 'cash')}
+                      className={cn(
+                        'py-3 rounded-xl border transition-all flex items-center justify-center gap-2 font-medium',
+                        data.paymentMethod === 'cash' ? selectedBtn : idleBtn
+                      )}
+                    >
+                      <Wallet className="w-4 h-4" />
+                      {t.order.cash}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => update('paymentMethod', 'card')}
+                      className={cn(
+                        'py-3 rounded-xl border transition-all flex items-center justify-center gap-2 font-medium',
+                        data.paymentMethod === 'card' ? selectedBtn : idleBtn
+                      )}
+                    >
+                      <CreditCard className="w-4 h-4" />
+                      {t.order.card}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="label-field">
+                    <Calendar className="w-4 h-4 inline mr-2 text-primary-500" />
+                    {t.order.when}
+                  </label>
+                  <div className="grid grid-cols-2 gap-3 mb-3.5">
+                    <button
+                      type="button"
+                      onClick={() => update('whenType', 'now')}
+                      className={cn(
+                        'py-3 rounded-xl border transition-all flex items-center justify-center gap-2 font-medium',
+                        data.whenType === 'now' ? selectedBtn : idleBtn
+                      )}
+                    >
+                      <Clock className="w-4.5 h-4.5" />
+                      {t.order.whenNow}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => update('whenType', 'later')}
+                      className={cn(
+                        'py-3 rounded-xl border transition-all flex items-center justify-center gap-2 font-medium',
+                        data.whenType === 'later' ? selectedBtn : idleBtn
+                      )}
+                    >
+                      <Calendar className="w-4.5 h-4.5" />
+                      {t.order.whenLater}
+                    </button>
+                  </div>
+
+                  <AnimatePresence>
+                    {data.whenType === 'later' && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                      >
+                        <input
+                          type="datetime-local"
+                          value={data.scheduledAt}
+                          onChange={(e) => update('scheduledAt', e.target.value)}
+                          min={new Date().toISOString().slice(0, 16)}
+                          className="input-field"
+                          style={{ background: 'rgba(12, 14, 28, 0.45)' }}
+                          required
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="label-field">
+                    <MessageSquare className="w-4 h-4 inline mr-2 text-primary-500" />
+                    {t.order.comment}
+                  </label>
+                  <textarea
+                    value={data.comment}
+                    onChange={(e) => update('comment', e.target.value)}
+                    placeholder={t.order.commentPlaceholder}
+                    rows={2}
+                    className="input-field resize-none"
+                    style={{ background: 'rgba(12, 14, 28, 0.45)' }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {step === 4 && (
+            <motion.div
+              key="step4"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="glass-2 p-4 rounded-2xl border border-slate-800 text-left">
+                  <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mb-2.5 block">Маршрут поездки</span>
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <span className="w-2 h-2 rounded-full bg-primary-500 mt-1.5 shrink-0" />
+                      <div>
+                        <div className="text-xs text-slate-400">Откуда ({data.fromCity})</div>
+                        <div className="text-sm font-semibold text-white">{data.fromAddress}</div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="w-2 h-2 rounded-full bg-pink-500 mt-1.5 shrink-0" />
+                      <div>
+                        <div className="text-xs text-slate-400">Куда ({data.toCity})</div>
+                        <div className="text-sm font-semibold text-white">{data.toAddress}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="glass-2 p-4 rounded-2xl border border-slate-800 text-left space-y-3.5">
+                  <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mb-1 block">Детали заказа</span>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-slate-400 block">Пассажир</span>
+                      <span className="text-white font-semibold">{data.customerName}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block">Класс</span>
+                      <span className="text-white font-semibold uppercase">{t.tariffs.classes[data.carClass].name}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block">Оплата</span>
+                      <span className="text-white font-semibold">
+                        {data.paymentMethod === 'cash' ? 'Наличные' : 'Карта водителю'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block">Время подачи</span>
+                      <span className="text-white font-semibold">
+                        {data.whenType === 'now' ? 'Сейчас' : 'Запланировано'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="glass-2 p-4.5 rounded-2xl border border-slate-800 text-left">
+                <label className="text-xs font-semibold text-slate-400 flex items-center gap-1.5 mb-2">
+                  <Tag className="w-3.5 h-3.5 text-mint-500" />
+                  Промокод (если есть)
+                </label>
+                {promoApplied ? (
+                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-mint-500/10 border border-mint-500/40">
+                    <BadgeCheck className="w-5 h-5 text-mint-400 shrink-0" />
+                    <span className="flex-1 font-mono font-semibold text-mint-400">{promoApplied.code}</span>
+                    <span className="text-mint-400 text-xs font-semibold">−{promoApplied.discount}%</span>
+                    <button type="button" onClick={removePromo} className="p-1 hover:bg-slate-900 rounded transition">
+                      <X className="w-4 h-4 text-slate-400" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                      placeholder="WELCOME10"
+                      className="input-field font-mono flex-1 h-11 text-sm"
+                      style={{ background: 'rgba(12, 14, 28, 0.45)' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={applyPromo}
+                      disabled={promoChecking || !promoCode.trim()}
+                      className="px-5 rounded-xl bg-slate-900 border border-slate-800 text-sm font-semibold hover:bg-primary-500 hover:text-white transition disabled:opacity-50"
+                    >
+                      {promoChecking ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Применить'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Navigation Buttons */}
+      <div className="mt-8 pt-6 border-t border-slate-800/80 flex items-center justify-between">
+        {step > 1 ? (
+          <button
+            type="button"
+            onClick={prevStep}
+            className="btn-ghost flex items-center gap-2 h-11 px-5 text-sm font-semibold border-slate-800 hover:bg-slate-900/60"
           >
-            {submitting ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                {t.order.submitting}
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-5 h-5" />
-                {t.order.submit}
-                <ArrowRight className="w-5 h-5" />
-              </>
-            )}
-          </motion.button>
+            <ArrowLeft className="w-4 h-4" />
+            Назад
+          </button>
+        ) : (
+          <div />
+        )}
+
+        <div className="flex items-center gap-4">
+          {estimatedPrice > 0 && (
+            <div className="text-right">
+              <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Итого:</span>
+              <span className="text-base font-bold text-primary-400 font-display">
+                {formatPrice(finalPrice)}
+              </span>
+            </div>
+          )}
+
+          {step < 4 ? (
+            <button
+              type="button"
+              onClick={nextStep}
+              className="btn-primary flex items-center gap-2 h-11 px-6 text-sm font-semibold"
+            >
+              Далее
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="btn-primary bg-gradient-to-r from-primary-500 via-purple-500 to-pink-500 border-transparent shadow-glow flex items-center gap-2 h-11 px-8 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Отправка...
+                </>
+              ) : (
+                <>
+                  Подтвердить и заказать
+                  <CheckCircle2 className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          )}
         </div>
-      </motion.div>
-    </motion.form>
+      </div>
+    </div>
   );
 }

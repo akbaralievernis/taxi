@@ -11,6 +11,7 @@ import {
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import Logo from '@/components/Logo';
+import CommandPalette from '@/components/admin/CommandPalette';
 
 const navItems = [
   { href: '/admin/dashboard', label: 'Дашборд', icon: LayoutDashboard },
@@ -34,7 +35,8 @@ export default function AdminShell({ children, username }: { children: React.Rea
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-graphite-950 text-white">
+      <CommandPalette />
       {/* Sidebar — desktop */}
       <aside className="hidden lg:flex flex-col w-64 border-r border-border bg-surface/60 backdrop-blur-xl">
         <div className="p-6 border-b border-border">

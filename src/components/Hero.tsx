@@ -4,125 +4,139 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowRight, Phone, Sparkles, ShieldCheck, Zap, Globe } from 'lucide-react';
 import { useLocale } from '@/lib/LocaleContext';
-import KyrgyzstanMap from './ui/KyrgyzstanMap';
+import CityMapCanvas from './ui/CityMapCanvas';
 import PhoneMockup from './ui/PhoneMockup';
 import AnimatedCounter from './ui/AnimatedCounter';
 import LiveActivityTicker from './ui/LiveActivityTicker';
+import MagneticButton from './ui/MagneticButton';
+import LiveEtaCard from './ui/LiveEtaCard';
+import { SPRING } from '@/lib/design-tokens';
 
 export default function Hero() {
   const { t } = useLocale();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Parallax for hero content
+  // Parallax on scroll
   const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 600], [0, 80]);
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.4]);
-  const mapY = useTransform(scrollY, [0, 600], [0, -40]);
+  const heroY = useTransform(scrollY, [0, 800], [0, 120]);
+  const heroOpacity = useTransform(scrollY, [0, 500], [1, 0.2]);
+  const mapY = useTransform(scrollY, [0, 800], [0, -60]);
 
   return (
-    <section ref={containerRef} className="relative min-h-screen pt-24 md:pt-28 pb-8 md:pb-12 overflow-hidden">
-      {/* Cinematic background: Kyrgyzstan map */}
+    <section
+      ref={containerRef}
+      className="relative min-h-screen pt-24 md:pt-32 pb-12 overflow-hidden bg-graphite-950"
+    >
+      {/* City Map Canvas Background */}
       <motion.div
         style={{ y: mapY }}
-        className="absolute inset-0 flex items-center justify-center opacity-40 dark:opacity-25 pointer-events-none"
+        className="absolute inset-0 z-0 pointer-events-none"
       >
-        <KyrgyzstanMap className="w-[140%] max-w-none -mt-20" />
+        <CityMapCanvas />
       </motion.div>
 
-      <div className="absolute inset-0 grid-pattern opacity-50 pointer-events-none" />
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 grid-pattern opacity-40 pointer-events-none z-0" />
+      <div className="absolute inset-0 noise pointer-events-none z-0" />
 
-      {/* Decorative orbs */}
+      {/* Ambient gradient lights (Orbs) */}
       <motion.div
-        animate={{ x: [0, 100, 0], y: [0, -50, 0], scale: [1, 1.1, 1] }}
-        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-20 -left-20 w-[500px] h-[500px] orb pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.45) 0%, transparent 70%)' }}
+        animate={{ x: [0, 40, 0], y: [0, -30, 0], scale: [1, 1.05, 1] }}
+        transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-20 -left-20 w-[500px] h-[500px] orb pointer-events-none z-0"
+        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)' }}
       />
       <motion.div
-        animate={{ x: [0, -80, 0], y: [0, 80, 0], scale: [1, 1.2, 1] }}
-        transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute -bottom-40 right-0 w-[600px] h-[600px] orb pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 70%)' }}
+        animate={{ x: [0, -40, 0], y: [0, 40, 0], scale: [1, 1.1, 1] }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute -bottom-40 right-0 w-[600px] h-[600px] orb pointer-events-none z-0"
+        style={{ background: 'radial-gradient(circle, rgba(245,170,26,0.12) 0%, transparent 70%)' }}
       />
 
       <motion.div
         style={{ y: heroY, opacity: heroOpacity }}
         className="container mx-auto px-4 relative z-10"
       >
-        <div className="grid lg:grid-cols-12 gap-6 md:gap-8 items-center min-h-[calc(100vh-180px)]">
-          {/* Left: text content (7 cols) */}
-          <div className="lg:col-span-7">
-            {/* Top badge */}
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[calc(100vh-160px)]">
+          
+          {/* Left Block: Narrative text & CTAs */}
+          <div className="lg:col-span-7 flex flex-col justify-center text-left">
+            {/* Online badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/30 backdrop-blur-md"
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ ...SPRING.stiff, delay: 0.15 }}
+              className="self-start inline-flex items-center gap-2 mb-6 px-3.5 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/20 backdrop-blur-md"
             >
               <span className="relative flex w-2 h-2">
                 <span className="absolute inline-flex w-full h-full rounded-full bg-mint-400 opacity-75 animate-ping" />
                 <span className="relative inline-flex w-2 h-2 rounded-full bg-mint-500" />
               </span>
-              <span className="text-sm font-medium text-primary-600 dark:text-primary-300">
+              <span className="text-xs font-semibold uppercase tracking-wider text-primary-300">
                 {t.hero.badge}
               </span>
             </motion.div>
 
+            {/* Display Headings */}
             <motion.h1
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.02] mb-4 md:mb-6 text-balance tracking-tight"
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] mb-5 text-balance tracking-tight font-display text-white"
             >
-              <span className="block text-ink">{t.hero.title}</span>
-              <span className="block gradient-text animate-gradient-bg">
+              <span className="block">{t.hero.title}</span>
+              <span className="block text-gradient-animated bg-size-200">
                 {t.hero.titleHighlight}
               </span>
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-base md:text-lg lg:text-xl text-ink-muted mb-6 md:mb-8 max-w-xl leading-relaxed"
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-base sm:text-lg text-slate-300 mb-8 max-w-xl leading-relaxed"
             >
               {t.hero.subtitle}
             </motion.p>
 
-            {/* CTAs */}
+            {/* Interactive Magnetic CTA block */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="flex flex-col xs:flex-row gap-3 mb-7 md:mb-10"
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="flex flex-col sm:flex-row gap-4 mb-10 md:mb-12"
             >
-              <motion.a
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                href="#order"
-                className="btn-primary flex items-center justify-center gap-2 text-base group"
+              <MagneticButton
+                range={60}
+                onClick={() => {
+                  const el = document.getElementById('order');
+                  el?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="btn-primary flex items-center justify-center gap-2.5 text-base font-semibold group h-14 px-8"
               >
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-4 h-4 text-indigo-200" />
                 {t.hero.orderBtn}
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </motion.a>
-              <motion.a
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                href="tel:+996555000000"
-                className="btn-secondary flex items-center justify-center gap-2 text-base"
+                <ArrowRight className="w-4.5 h-4.5 transition-transform group-hover:translate-x-1" />
+              </MagneticButton>
+
+              <MagneticButton
+                range={45}
+                onClick={() => {
+                  window.location.href = 'tel:+996555000000';
+                }}
+                className="btn-ghost flex items-center justify-center gap-2 text-base font-semibold h-14 px-8 text-white hover:border-slate-700"
               >
-                <Phone className="w-4 h-4" />
+                <Phone className="w-4 h-4 text-slate-400" />
                 {t.hero.callBtn}
-              </motion.a>
+              </MagneticButton>
             </motion.div>
 
-            {/* Live counters */}
+            {/* Counter Grid */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="grid grid-cols-3 gap-2 sm:gap-4 max-w-xl"
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="grid grid-cols-3 gap-3 max-w-xl"
             >
               {[
                 {
@@ -149,83 +163,90 @@ export default function Hero() {
               ].map((s, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + i * 0.1 }}
-                  whileHover={{ y: -4 }}
-                  className="glass-card p-2 sm:p-3 relative overflow-hidden group"
+                  transition={{ duration: 0.5, delay: 0.55 + i * 0.08 }}
+                  whileHover={{ y: -4, borderColor: 'rgba(99, 102, 241, 0.3)' }}
+                  className="glass-2 p-3 sm:p-4 rounded-2xl relative overflow-hidden group border border-slate-800/80 transition-all duration-300"
                 >
-                  <div className={`absolute -top-6 -right-6 w-16 h-16 rounded-full bg-gradient-to-br ${s.color} opacity-20 blur-xl group-hover:opacity-40 transition`} />
-                  <s.icon className="w-4 h-4 text-primary-500 mb-1.5" />
-                  <div className="text-lg sm:text-xl font-bold gradient-text leading-none">
+                  <div className={`absolute -top-6 -right-6 w-16 h-16 rounded-full bg-gradient-to-br ${s.color} opacity-10 blur-xl group-hover:opacity-25 transition-opacity duration-300`} />
+                  <s.icon className="w-4 h-4 text-indigo-400 mb-2" />
+                  <div className="text-xl sm:text-2xl font-bold leading-none tracking-tight text-white font-display">
                     <AnimatedCounter to={s.value} decimals={s.decimals ?? 0} suffix={s.suffix ?? ''} />
                   </div>
-                  <div className="text-[10px] text-ink-subtle mt-1.5 leading-tight">{s.label}</div>
+                  <div className="text-[10px] sm:text-xs text-slate-400 mt-2 leading-snug">{s.label}</div>
                 </motion.div>
               ))}
             </motion.div>
           </div>
 
-          {/* Right: Phone mockup (5 cols) */}
-          <div className="hidden md:flex lg:col-span-5 items-center justify-center relative">
-            {/* Glow behind phone */}
+          {/* Right Block: 3D-feeling layout of phone + LiveEtaCard overlay */}
+          <div className="hidden md:flex lg:col-span-5 items-center justify-center relative min-h-[500px]">
+            {/* Vibrant backdrop aura */}
             <motion.div
-              animate={{ opacity: [0.3, 0.6, 0.3], scale: [0.9, 1, 0.9] }}
-              transition={{ duration: 5, repeat: Infinity }}
-              className="absolute inset-0 rounded-full blur-3xl"
+              animate={{ opacity: [0.35, 0.55, 0.35], scale: [0.95, 1.05, 0.95] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute w-[450px] h-[450px] rounded-full blur-[100px] pointer-events-none"
               style={{
                 background:
-                  'radial-gradient(circle, rgba(99,102,241,0.4) 0%, rgba(168,85,247,0.3) 40%, transparent 70%)',
+                  'radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.15) 45%, transparent 70%)',
               }}
             />
 
-            <div className="relative z-10">
+            {/* PhoneMockup centered */}
+            <div className="relative z-10 scale-[0.95] lg:scale-100 transition-transform">
               <PhoneMockup />
             </div>
 
-            {/* Floating chips around phone */}
+            {/* Floating Live Tracking Card (replaces generic chips) */}
             <motion.div
               animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-              className="absolute top-12 -left-4 lg:left-2 glass-card-strong p-3 px-4 shadow-glow-sm hidden md:flex items-center gap-2 z-20"
+              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute left-[-40px] top-[15%] z-20 shadow-depth-md"
             >
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-mint-500 to-accent-500 flex items-center justify-center">
-                <Zap className="w-3.5 h-3.5 text-white" />
-              </div>
-              <div>
-                <div className="text-[10px] text-ink-subtle">Поездок сейчас</div>
-                <div className="text-base font-bold gradient-text leading-tight">
-                  <AnimatedCounter to={47} />
-                </div>
-              </div>
+              <LiveEtaCard />
             </motion.div>
 
+            {/* Floating stats card on the right */}
             <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 4, repeat: Infinity, delay: 1 }}
-              className="absolute bottom-16 -right-4 lg:right-2 glass-card-strong p-3 px-4 shadow-glow-sm hidden md:flex items-center gap-2 z-20"
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+              className="absolute right-[-20px] bottom-[15%] glass-3 p-3.5 px-4.5 rounded-2xl shadow-depth-md flex items-center gap-3 border border-slate-800/80 z-20"
+              style={{ background: 'rgba(12, 14, 28, 0.85)' }}
             >
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center">
-                <ShieldCheck className="w-3.5 h-3.5 text-white" />
+              <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                <Zap className="w-4 h-4 text-emerald-400" />
               </div>
               <div>
-                <div className="text-[10px] text-ink-subtle">Все водители</div>
-                <div className="text-sm font-bold text-ink leading-tight">Проверены</div>
+                <div className="text-[10px] text-slate-400 font-medium">Активных заказов</div>
+                <div className="text-base font-bold text-white leading-none mt-0.5">
+                  <AnimatedCounter to={142} />
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
 
-        {/* Live activity ticker */}
+        {/* Live Activity Ticker */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
           className="mt-12"
         >
           <LiveActivityTicker />
         </motion.div>
       </motion.div>
+
+      {/* Down Chevron scroll indicator */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none flex flex-col items-center gap-1 z-10 opacity-70">
+        <span className="text-[10px] tracking-widest text-slate-400 font-semibold uppercase">Листайте вниз</span>
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+          className="w-1.5 h-3 bg-slate-500 rounded-full"
+        />
+      </div>
     </section>
   );
 }

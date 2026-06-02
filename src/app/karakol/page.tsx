@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
@@ -30,9 +31,15 @@ const FAQ = dynamic(() => import('@/components/FAQ'), {
   loading: () => <div className="min-h-[300px] animate-pulse bg-graphite-900/20 rounded-2xl border border-graphite-800/50 my-8 mx-auto max-w-7xl h-96" />
 });
 
-export default function HomePage() {
+export const metadata: Metadata = {
+  title: 'Такси Каракол — Заказать такси в Караколе онлайн 24/7 | Taxi KG',
+  description: 'Заказ такси в Караколе и Иссык-Кульской области. Быстрая подача машины. Фиксированные и честные тарифы. Поездки по Караколу, на горнолыжную базу, в Чолпон-Ату и Бишкек. Работаем 24/7.',
+  keywords: ['такси Каракол', 'заказать такси Каракол', 'такси Каракол горнолыжная база', 'Каракол такси онлайн', 'такси Иссык-Куль', 'такси Каракол Бишкек'],
+};
+
+export default function KarakolPage() {
   return (
-    <main className="overflow-x-hidden pb-20 md:pb-0">
+    <main className="overflow-x-hidden pb-20 md:pb-0 bg-graphite-950 text-white">
       <JsonLd />
       <PWARegister />
       <Header />
@@ -42,7 +49,8 @@ export default function HomePage() {
       <Tariffs />
       <Routes />
       <HowItWorks />
-      <OrderSection />
+      {/* Renders order form preset for Karakol */}
+      <OrderSection defaultFromCity="Каракол" defaultToCity="Каракол" />
       <Reviews />
       <FAQ />
       <Footer />
@@ -50,4 +58,3 @@ export default function HomePage() {
     </main>
   );
 }
-

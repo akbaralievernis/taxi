@@ -29,29 +29,26 @@ export default function FloatingCTA() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-          className="fixed bottom-0 left-0 right-0 z-40 md:hidden"
+          className="fixed left-0 right-0 z-30 md:hidden"
+          style={{ bottom: 'calc(64px + env(safe-area-inset-bottom))' }}
         >
-          {/* Safe area bottom padding for iPhones */}
-          <div
-            className="px-4 pt-3 pb-4"
-            style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
-          >
-            <div className="glass-card-strong shadow-glow-sm flex items-center gap-3 p-2 rounded-2xl">
+          <div className="px-4 py-2">
+            <div className="glass-3 shadow-depth-md flex items-center gap-3 p-2 rounded-2xl border border-slate-800">
               {/* Phone quick-call */}
               <a
                 href="tel:+996555000000"
                 id="mobile-cta-call"
-                className="flex-shrink-0 w-12 h-12 rounded-xl bg-surface-elevated flex items-center justify-center text-ink-muted hover:text-primary-500 hover:bg-primary-500/10 transition active:scale-95"
+                className="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-900 border border-slate-850 flex items-center justify-center text-slate-400 hover:text-white transition active:scale-95 shadow-sm"
                 aria-label="Позвонить"
               >
-                <Phone className="w-5 h-5" />
+                <Phone className="w-4.5 h-4.5" />
               </a>
 
               {/* Order CTA */}
               <a
                 href="#order"
                 id="mobile-cta-order"
-                className="flex-1 btn-primary flex items-center justify-center gap-2 text-base !py-3 group"
+                className="flex-1 btn-primary flex items-center justify-center gap-2 text-sm font-semibold !py-3 h-12 group"
               >
                 {t.hero.orderBtn}
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

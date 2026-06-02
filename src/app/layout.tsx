@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import { LocaleProvider } from '@/lib/LocaleContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { Toaster } from 'react-hot-toast';
+import CursorGlow from '@/components/ui/CursorGlow';
+import BottomNav from '@/components/ui/BottomNav';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -54,11 +56,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#f8fafc' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0e1a' },
+    { media: '(prefers-color-scheme: dark)', color: '#050508' },
   ],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -72,13 +75,13 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icon-192.svg" />
-        <meta name="theme-color" content="#0a0e1a" />
+        <meta name="theme-color" content="#050508" />
         {/* Предотвращаем FOUC: применяем тему до отрисовки */}
         <script
           dangerouslySetInnerHTML={{
@@ -98,9 +101,11 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <CursorGlow />
         <ThemeProvider>
           <LocaleProvider>
             {children}
+            <BottomNav />
             <Toaster
               position="top-center"
               toastOptions={{

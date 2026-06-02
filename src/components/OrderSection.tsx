@@ -5,7 +5,12 @@ import { Sparkles } from 'lucide-react';
 import { useLocale } from '@/lib/LocaleContext';
 import OrderForm from './OrderForm';
 
-export default function OrderSection() {
+interface OrderSectionProps {
+  defaultFromCity?: string;
+  defaultToCity?: string;
+}
+
+export default function OrderSection({ defaultFromCity, defaultToCity }: OrderSectionProps) {
   const { t } = useLocale();
 
   return (
@@ -27,7 +32,7 @@ export default function OrderSection() {
           <p className="text-ink-muted text-lg">{t.order.subtitle}</p>
         </motion.div>
 
-        <OrderForm />
+        <OrderForm defaultFromCity={defaultFromCity} defaultToCity={defaultToCity} />
       </div>
     </section>
   );
