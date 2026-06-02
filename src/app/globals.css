@@ -298,22 +298,61 @@
 /* ===== LIQUID METAL BUTTON ===== */
 
 /**
- * Pill-shaped bar that sits flush to the left edge.
- * The bar is dark with an inset top highlight, and the orb
- * is positioned at the right end.
+ * CSS custom properties control all sizes — override per breakpoint.
+ * Mobile-first: smallest values defined on :root, scaled up at breakpoints.
+ */
+:root {
+  --lm-orb-size:    140px;   /* diameter of the metal orb */
+  --lm-bar-gap:     24px;    /* gap between the two icons */
+  --lm-icon-size:   40px;    /* decorative svg icons */
+  --lm-arrow-size:  26px;    /* arrow inside the orb */
+  --lm-ring-pad:    2px;     /* conic border ring thickness */
+}
+
+@media (min-width: 480px) {
+  :root {
+    --lm-orb-size:    180px;
+    --lm-bar-gap:     32px;
+    --lm-icon-size:   52px;
+    --lm-arrow-size:  32px;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --lm-orb-size:    240px;
+    --lm-bar-gap:     48px;
+    --lm-icon-size:   72px;
+    --lm-arrow-size:  40px;
+    --lm-ring-pad:    3px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --lm-orb-size:    308px;
+    --lm-bar-gap:     64px;
+    --lm-icon-size:   112px;
+    --lm-arrow-size:  52px;
+  }
+}
+
+/**
+ * Pill-shaped bar: dark with inset top highlight.
+ * Orb overflows the bar on the right.
  */
 .liquid-metal-bar {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4rem;
-  padding: 1.25rem 1.5rem;
+  gap: var(--lm-bar-gap);
+  padding: clamp(12px, 2vw, 20px) clamp(14px, 2.5vw, 24px);
   background: #000;
   border-radius: 999px;
   box-shadow: inset 0 2px 0 0 #444;
-  /* Make the orb overflow the bar on the right */
-  padding-right: calc(19.25rem + 1.5rem);
+  /* right padding leaves room for the orb */
+  padding-right: calc(var(--lm-orb-size) + clamp(14px, 2.5vw, 24px));
 }
 
 /* Decorative icons inside the bar */
@@ -326,18 +365,13 @@
 }
 
 .liquid-metal-bar__icon svg {
-  width: 7rem;
-  height: 7rem;
+  width:  var(--lm-icon-size);
+  height: var(--lm-icon-size);
   fill: currentColor;
 }
 
-.liquid-metal-bar__icon--lead svg {
-  transform: rotate(70deg);
-}
-
-.liquid-metal-bar__icon--trail svg {
-  transform: rotate(180deg);
-}
+.liquid-metal-bar__icon--lead svg  { transform: rotate(70deg);  }
+.liquid-metal-bar__icon--trail svg { transform: rotate(180deg); }
 
 /* ---- The interactive orb ---- */
 .liquid-metal-orb {
@@ -345,16 +379,17 @@
   right: -1px;
   top: 50%;
   transform: translateY(-50%);
-  width: 19.25rem;
-  height: 19.25rem;
+  width:  var(--lm-orb-size);
+  height: var(--lm-orb-size);
   border-radius: 50%;
   cursor: pointer;
   background: transparent;
   border: none;
   padding: 0;
-  /* stack: ring > sphere > arrow */
   display: grid;
   place-items: center;
+  /* Ensure tap targets are large enough */
+  touch-action: manipulation;
 }
 
 /* Conic-gradient border ring */
@@ -362,7 +397,7 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  padding: 3px;
+  padding: var(--lm-ring-pad);
   background: conic-gradient(from 180deg, blue, purple, red, purple, blue);
   filter: grayscale(1);
   -webkit-mask:
@@ -376,33 +411,36 @@
   transition: filter 0.35s ease;
 }
 
-.liquid-metal-orb:hover .liquid-metal-orb__ring {
+/* Show colour on hover (pointer) and on touch-active */
+.liquid-metal-orb:hover .liquid-metal-orb__ring,
+.liquid-metal-orb:active .liquid-metal-orb__ring {
   filter: grayscale(0);
 }
 
 /* Metal inner sphere */
 .liquid-metal-orb__sphere {
   position: absolute;
-  inset: 3px; /* matches ring padding */
+  inset: var(--lm-ring-pad);
   border-radius: 50%;
   overflow: hidden;
   background: linear-gradient(#444, #000);
   box-shadow: inset 0 3px 5px rgba(255, 255, 255, 0.25);
 }
 
-/* Arrow icon in the centre of the orb */
+/* Arrow icon centred on the orb */
 .liquid-metal-orb__arrow {
   position: relative;
   z-index: 1;
-  width: 4.5rem;
-  height: 4.5rem;
+  width:  var(--lm-arrow-size);
+  height: var(--lm-arrow-size);
   fill: #65615f;
   transform: rotate(-45deg);
   transition: fill 0.3s ease, transform 0.3s ease;
   pointer-events: none;
 }
 
-.liquid-metal-orb:hover .liquid-metal-orb__arrow {
+.liquid-metal-orb:hover .liquid-metal-orb__arrow,
+.liquid-metal-orb:active .liquid-metal-orb__arrow {
   fill: #a0a0a0;
   transform: rotate(-45deg) scale(1.1);
 }

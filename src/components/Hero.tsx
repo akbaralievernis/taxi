@@ -20,7 +20,7 @@ export default function Hero() {
   const mapY = useTransform(scrollY, [0, 600], [0, -40]);
 
   return (
-    <section ref={containerRef} className="relative min-h-screen pt-28 pb-12 overflow-hidden">
+    <section ref={containerRef} className="relative min-h-screen pt-24 md:pt-28 pb-8 md:pb-12 overflow-hidden">
       {/* Cinematic background: Kyrgyzstan map */}
       <motion.div
         style={{ y: mapY }}
@@ -49,7 +49,7 @@ export default function Hero() {
         style={{ y: heroY, opacity: heroOpacity }}
         className="container mx-auto px-4 relative z-10"
       >
-        <div className="grid lg:grid-cols-12 gap-8 items-center min-h-[calc(100vh-180px)]">
+        <div className="grid lg:grid-cols-12 gap-6 md:gap-8 items-center min-h-[calc(100vh-180px)]">
           {/* Left: text content (7 cols) */}
           <div className="lg:col-span-7">
             {/* Top badge */}
@@ -72,7 +72,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.02] mb-6 text-balance tracking-tight"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.02] mb-4 md:mb-6 text-balance tracking-tight"
             >
               <span className="block text-ink">{t.hero.title}</span>
               <span className="block gradient-text animate-gradient-bg">
@@ -84,7 +84,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-lg md:text-xl text-ink-muted mb-8 max-w-xl leading-relaxed"
+              className="text-base md:text-lg lg:text-xl text-ink-muted mb-6 md:mb-8 max-w-xl leading-relaxed"
             >
               {t.hero.subtitle}
             </motion.p>
@@ -94,7 +94,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-3 mb-10"
+              className="flex flex-col xs:flex-row gap-3 mb-7 md:mb-10"
             >
               <motion.a
                 whileHover={{ scale: 1.03 }}
@@ -122,7 +122,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="grid grid-cols-3 gap-4 max-w-xl"
+              className="grid grid-cols-3 gap-2 sm:gap-4 max-w-xl"
             >
               {[
                 {
@@ -153,11 +153,11 @@ export default function Hero() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 + i * 0.1 }}
                   whileHover={{ y: -4 }}
-                  className="glass-card p-3 relative overflow-hidden group"
+                  className="glass-card p-2 sm:p-3 relative overflow-hidden group"
                 >
                   <div className={`absolute -top-6 -right-6 w-16 h-16 rounded-full bg-gradient-to-br ${s.color} opacity-20 blur-xl group-hover:opacity-40 transition`} />
                   <s.icon className="w-4 h-4 text-primary-500 mb-1.5" />
-                  <div className="text-xl font-bold gradient-text leading-none">
+                  <div className="text-lg sm:text-xl font-bold gradient-text leading-none">
                     <AnimatedCounter to={s.value} decimals={s.decimals ?? 0} suffix={s.suffix ?? ''} />
                   </div>
                   <div className="text-[10px] text-ink-subtle mt-1.5 leading-tight">{s.label}</div>
@@ -167,7 +167,7 @@ export default function Hero() {
           </div>
 
           {/* Right: Phone mockup (5 cols) */}
-          <div className="lg:col-span-5 flex items-center justify-center relative">
+          <div className="hidden md:flex lg:col-span-5 items-center justify-center relative">
             {/* Glow behind phone */}
             <motion.div
               animate={{ opacity: [0.3, 0.6, 0.3], scale: [0.9, 1, 0.9] }}

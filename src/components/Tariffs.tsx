@@ -68,13 +68,13 @@ export default function Tariffs() {
             <Sparkles className="w-3 h-3" />
             Тарифы
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 tracking-tight">
             <span className="gradient-text">{t.tariffs.title}</span>
           </h2>
           <p className="text-ink-muted text-lg">{t.tariffs.subtitle}</p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {classes.map((cls, i) => {
             const data = tariffData[cls];
             const Icon = data.icon;
@@ -104,7 +104,7 @@ export default function Tariffs() {
                   </div>
 
                   <h3 className="text-xl font-bold mb-1 text-ink">{tariff.name}</h3>
-                  <p className="text-ink-subtle text-sm mb-5 min-h-[40px]">{tariff.desc}</p>
+                  <p className="text-ink-subtle text-sm mb-3 sm:mb-5 min-h-[2.5rem]">{tariff.desc}</p>
 
                   <div className="space-y-3 mb-5 pb-5 border-b border-border">
                     <div>

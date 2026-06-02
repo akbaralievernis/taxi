@@ -17,7 +17,7 @@ export default function Features() {
   const { t } = useLocale();
 
   return (
-    <section id="features" className="py-24 relative">
+    <section id="features" className="py-12 md:py-24 relative">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -29,13 +29,13 @@ export default function Features() {
             <Shield className="w-3 h-3" />
             Преимущества
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-ink tracking-tight">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-ink tracking-tight">
             <span className="gradient-text">{t.features.title}</span>
           </h2>
           <p className="text-ink-muted text-lg">{t.features.subtitle}</p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {t.features.items.map((feature, i) => {
             const cfg = featureConfig[i % featureConfig.length];
             const Icon = cfg.icon;

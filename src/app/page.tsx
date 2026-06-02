@@ -11,10 +11,11 @@ import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import PWARegister from '@/components/PWARegister';
 import JsonLd from '@/components/seo/JsonLd';
+import FloatingCTA from '@/components/ui/FloatingCTA';
 
 export default function HomePage() {
   return (
-    <main className="overflow-x-hidden">
+    <main className="overflow-x-hidden pb-20 md:pb-0">
       <JsonLd />
       <PWARegister />
       <Header />
@@ -28,6 +29,8 @@ export default function HomePage() {
       <Reviews />
       <FAQ />
       <Footer />
+      <FloatingCTA />
     </main>
   );
 }
+

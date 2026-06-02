@@ -234,9 +234,9 @@ export default function OrderForm() {
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="glass-card-strong p-6 md:p-8 max-w-4xl mx-auto shadow-glow-sm"
+      className="glass-card-strong p-4 md:p-6 lg:p-8 max-w-4xl mx-auto shadow-glow-sm pb-6 md:pb-8"
     >
-      <div className="grid md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
         {/* Имя */}
         <div>
           <label className="label-field">
@@ -432,7 +432,7 @@ export default function OrderForm() {
             <Car className="w-4 h-4 inline mr-2 text-primary-500" />
             {t.order.carClass}
           </label>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
             {(['economy', 'comfort', 'business', 'minivan', 'cargo'] as CarClass[]).map(cls => (
               <button
                 key={cls}

@@ -44,7 +44,7 @@ const trustBadges = [
 
 export default function TrustStats() {
   return (
-    <section className="py-20 relative">
+    <section className="py-12 md:py-20 relative">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -56,7 +56,7 @@ export default function TrustStats() {
             <TrendingUp className="w-3 h-3" />
             Цифры
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 tracking-tight">
             <span className="gradient-text">Нам доверяют тысячи</span>
           </h2>
           <p className="text-ink-muted text-lg">
@@ -73,21 +73,21 @@ export default function TrustStats() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -6 }}
-              className="glass-card p-6 relative overflow-hidden group"
+              className="glass-card p-4 md:p-6 relative overflow-hidden group"
             >
               <div
                 className={`absolute -top-10 -right-10 w-32 h-32 rounded-full bg-gradient-to-br ${stat.gradient} opacity-20 blur-2xl group-hover:opacity-40 transition`}
               />
               <div
-                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center mb-4 shadow-lg`}
+                className={`w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center mb-3 md:mb-4 shadow-lg`}
               >
                 <stat.icon className="w-6 h-6 text-white" />
               </div>
-              <div className="text-3xl md:text-4xl font-bold gradient-text leading-none mb-2">
+              <div className="text-2xl md:text-3xl lg:text-4xl font-bold gradient-text leading-none mb-2">
                 <AnimatedCounter to={stat.value} suffix={stat.suffix ?? '+'} />
               </div>
-              <div className="text-sm font-semibold text-ink">{stat.label}</div>
-              <div className="text-xs text-ink-subtle">{stat.sub}</div>
+              <div className="text-xs sm:text-sm font-semibold text-ink">{stat.label}</div>
+              <div className="text-[10px] sm:text-xs text-ink-subtle">{stat.sub}</div>
             </motion.div>
           ))}
         </div>

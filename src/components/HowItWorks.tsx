@@ -14,7 +14,7 @@ export default function HowItWorks() {
   const { t } = useLocale();
 
   return (
-    <section id="how" className="py-24 relative">
+    <section id="how" className="py-12 md:py-24 relative">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -26,13 +26,13 @@ export default function HowItWorks() {
             <Zap className="w-3 h-3" />
             Как заказать
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 tracking-tight">
             <span className="gradient-text">{t.howItWorks.title}</span>
           </h2>
           <p className="text-ink-muted text-lg">{t.howItWorks.subtitle}</p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 relative max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 relative max-w-5xl mx-auto">
           {/* Connecting line */}
           <div className="hidden md:block absolute top-14 left-[16%] right-[16%] h-px bg-gradient-to-r from-transparent via-primary-500 to-transparent opacity-40" />
 
