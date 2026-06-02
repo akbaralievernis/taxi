@@ -269,6 +269,16 @@
       radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.3) 0%, transparent 40%);
   }
 
+  .mask-fade-x {
+    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  }
+
+  .glass-input {
+    background: rgba(var(--glass-bg), 0.4);
+    backdrop-filter: blur(12px);
+  }
+
   .text-ink { color: rgb(var(--ink)); }
   .text-ink-muted { color: rgb(var(--ink-muted)); }
   .text-ink-subtle { color: rgb(var(--ink-subtle)); }
@@ -284,3 +294,116 @@
   color: rgb(248, 250, 252) !important;
   border: 1px solid rgba(99, 102, 241, 0.3) !important;
 }
+
+/* ===== LIQUID METAL BUTTON ===== */
+
+/**
+ * Pill-shaped bar that sits flush to the left edge.
+ * The bar is dark with an inset top highlight, and the orb
+ * is positioned at the right end.
+ */
+.liquid-metal-bar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+  padding: 1.25rem 1.5rem;
+  background: #000;
+  border-radius: 999px;
+  box-shadow: inset 0 2px 0 0 #444;
+  /* Make the orb overflow the bar on the right */
+  padding-right: calc(19.25rem + 1.5rem);
+}
+
+/* Decorative icons inside the bar */
+.liquid-metal-bar__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #65615f;
+  flex-shrink: 0;
+}
+
+.liquid-metal-bar__icon svg {
+  width: 7rem;
+  height: 7rem;
+  fill: currentColor;
+}
+
+.liquid-metal-bar__icon--lead svg {
+  transform: rotate(70deg);
+}
+
+.liquid-metal-bar__icon--trail svg {
+  transform: rotate(180deg);
+}
+
+/* ---- The interactive orb ---- */
+.liquid-metal-orb {
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 19.25rem;
+  height: 19.25rem;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  /* stack: ring > sphere > arrow */
+  display: grid;
+  place-items: center;
+}
+
+/* Conic-gradient border ring */
+.liquid-metal-orb__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  padding: 3px;
+  background: conic-gradient(from 180deg, blue, purple, red, purple, blue);
+  filter: grayscale(1);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  transition: filter 0.35s ease;
+}
+
+.liquid-metal-orb:hover .liquid-metal-orb__ring {
+  filter: grayscale(0);
+}
+
+/* Metal inner sphere */
+.liquid-metal-orb__sphere {
+  position: absolute;
+  inset: 3px; /* matches ring padding */
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(#444, #000);
+  box-shadow: inset 0 3px 5px rgba(255, 255, 255, 0.25);
+}
+
+/* Arrow icon in the centre of the orb */
+.liquid-metal-orb__arrow {
+  position: relative;
+  z-index: 1;
+  width: 4.5rem;
+  height: 4.5rem;
+  fill: #65615f;
+  transform: rotate(-45deg);
+  transition: fill 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.liquid-metal-orb:hover .liquid-metal-orb__arrow {
+  fill: #a0a0a0;
+  transform: rotate(-45deg) scale(1.1);
+}
+

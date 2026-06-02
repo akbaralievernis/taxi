@@ -1,46 +1,58 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { ArrowRight, Phone, Clock, Shield, MapPin, Sparkles, Star } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef } from 'react';
+import { ArrowRight, Phone, Sparkles, ShieldCheck, Zap, Globe } from 'lucide-react';
 import { useLocale } from '@/lib/LocaleContext';
-import { LogoFull } from './Logo';
+import KyrgyzstanMap from './ui/KyrgyzstanMap';
+import PhoneMockup from './ui/PhoneMockup';
+import AnimatedCounter from './ui/AnimatedCounter';
+import LiveActivityTicker from './ui/LiveActivityTicker';
 
 export default function Hero() {
   const { t } = useLocale();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Parallax for hero content
+  const { scrollY } = useScroll();
+  const heroY = useTransform(scrollY, [0, 600], [0, 80]);
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.4]);
+  const mapY = useTransform(scrollY, [0, 600], [0, -40]);
 
   return (
-    <section className="relative min-h-screen flex items-center pt-28 pb-16 overflow-hidden">
-      {/* Animated mesh background */}
-      <div className="absolute inset-0 grid-pattern" />
+    <section ref={containerRef} className="relative min-h-screen pt-28 pb-12 overflow-hidden">
+      {/* Cinematic background: Kyrgyzstan map */}
+      <motion.div
+        style={{ y: mapY }}
+        className="absolute inset-0 flex items-center justify-center opacity-40 dark:opacity-25 pointer-events-none"
+      >
+        <KyrgyzstanMap className="w-[140%] max-w-none -mt-20" />
+      </motion.div>
+
+      <div className="absolute inset-0 grid-pattern opacity-50 pointer-events-none" />
 
       {/* Decorative orbs */}
       <motion.div
         animate={{ x: [0, 100, 0], y: [0, -50, 0], scale: [1, 1.1, 1] }}
         transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-20 -left-20 w-[500px] h-[500px] orb"
+        className="absolute top-20 -left-20 w-[500px] h-[500px] orb pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.45) 0%, transparent 70%)' }}
       />
       <motion.div
         animate={{ x: [0, -80, 0], y: [0, 80, 0], scale: [1, 1.2, 1] }}
         transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute -bottom-40 right-0 w-[600px] h-[600px] orb"
+        className="absolute -bottom-40 right-0 w-[600px] h-[600px] orb pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 70%)' }}
       />
-      <motion.div
-        animate={{ x: [0, 60, 0], y: [0, -60, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/2 right-1/4 w-[400px] h-[400px] orb"
-        style={{ background: 'radial-gradient(circle, rgba(6,182,212,0.35) 0%, transparent 70%)' }}
-      />
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left: text */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
+      <motion.div
+        style={{ y: heroY, opacity: heroOpacity }}
+        className="container mx-auto px-4 relative z-10"
+      >
+        <div className="grid lg:grid-cols-12 gap-8 items-center min-h-[calc(100vh-180px)]">
+          {/* Left: text content (7 cols) */}
+          <div className="lg:col-span-7">
+            {/* Top badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -56,18 +68,34 @@ export default function Hero() {
               </span>
             </motion.div>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] mb-6 text-balance tracking-tight">
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.02] mb-6 text-balance tracking-tight"
+            >
               <span className="block text-ink">{t.hero.title}</span>
               <span className="block gradient-text animate-gradient-bg">
                 {t.hero.titleHighlight}
               </span>
-            </h1>
+            </motion.h1>
 
-            <p className="text-lg md:text-xl text-ink-muted mb-8 max-w-xl leading-relaxed">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-lg md:text-xl text-ink-muted mb-8 max-w-xl leading-relaxed"
+            >
               {t.hero.subtitle}
-            </p>
+            </motion.p>
 
-            <div className="flex flex-col sm:flex-row gap-3 mb-12">
+            {/* CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="flex flex-col sm:flex-row gap-3 mb-10"
+            >
               <motion.a
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
@@ -87,131 +115,117 @@ export default function Hero() {
                 <Phone className="w-4 h-4" />
                 {t.hero.callBtn}
               </motion.a>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-3 gap-3">
+            {/* Live counters */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="grid grid-cols-3 gap-4 max-w-xl"
+            >
               {[
-                { icon: Clock, text: t.hero.feature1, color: 'from-primary-500 to-purple-500' },
-                { icon: Shield, text: t.hero.feature2, color: 'from-accent-500 to-primary-500' },
-                { icon: MapPin, text: t.hero.feature3, color: 'from-mint-500 to-accent-500' },
-              ].map((feature, i) => (
+                {
+                  value: 12847,
+                  label: 'Поездок выполнено',
+                  icon: Zap,
+                  color: 'from-primary-500 to-purple-500',
+                },
+                {
+                  value: 89,
+                  suffix: '+',
+                  label: 'Водителей онлайн',
+                  icon: ShieldCheck,
+                  color: 'from-mint-500 to-accent-500',
+                },
+                {
+                  value: 4.9,
+                  decimals: 1,
+                  suffix: '★',
+                  label: 'Средний рейтинг',
+                  icon: Globe,
+                  color: 'from-accent-500 to-primary-500',
+                },
+              ].map((s, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + i * 0.1 }}
+                  transition={{ delay: 0.6 + i * 0.1 }}
                   whileHover={{ y: -4 }}
-                  className="glass-card p-3 text-center group cursor-default"
+                  className="glass-card p-3 relative overflow-hidden group"
                 >
-                  <div className={`w-9 h-9 mx-auto mb-2 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center shadow-sm`}>
-                    <feature.icon className="w-4 h-4 text-white" />
+                  <div className={`absolute -top-6 -right-6 w-16 h-16 rounded-full bg-gradient-to-br ${s.color} opacity-20 blur-xl group-hover:opacity-40 transition`} />
+                  <s.icon className="w-4 h-4 text-primary-500 mb-1.5" />
+                  <div className="text-xl font-bold gradient-text leading-none">
+                    <AnimatedCounter to={s.value} decimals={s.decimals ?? 0} suffix={s.suffix ?? ''} />
                   </div>
-                  <div className="text-xs font-medium text-ink-muted">{feature.text}</div>
+                  <div className="text-[10px] text-ink-subtle mt-1.5 leading-tight">{s.label}</div>
                 </motion.div>
               ))}
-            </div>
-          </motion.div>
-
-          {/* Right: Logo Showcase (replaces 3D car) */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="relative hidden lg:flex items-center justify-center"
-          >
-            <motion.div
-              animate={{ y: [0, -12, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              className="relative w-full max-w-md"
-            >
-              {/* Aura behind logo */}
-              <motion.div
-                animate={{
-                  opacity: [0.3, 0.6, 0.3],
-                  scale: [0.95, 1.05, 0.95],
-                }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute inset-0 rounded-full blur-3xl"
-                style={{
-                  background:
-                    'radial-gradient(circle at center, rgba(99,102,241,0.6) 0%, rgba(168,85,247,0.4) 30%, rgba(34,211,238,0.3) 60%, transparent 80%)',
-                }}
-              />
-
-              {/* Glass card with logo */}
-              <div className="relative glass-card-strong rounded-3xl p-10 shadow-glow">
-                {/* Inner gradient overlay */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary-500/15 via-transparent to-accent-500/15 pointer-events-none" />
-
-                {/* Logo with full mark + text */}
-                <div className="relative text-ink">
-                  <LogoFull className="w-full h-auto" />
-                </div>
-
-                {/* Tagline below logo */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 }}
-                  className="relative mt-6 pt-6 border-t border-border text-center"
-                >
-                  <div className="text-xs uppercase tracking-[0.3em] text-ink-subtle mb-2">
-                    Бишкек · Ош · 24/7
-                  </div>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div>
-                      <div className="text-2xl font-bold gradient-text">4.9</div>
-                      <div className="flex items-center justify-center gap-0.5">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-2.5 h-2.5 text-yellow-400 fill-current" />
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold gradient-text">247</div>
-                      <div className="text-[10px] text-ink-subtle">поездок</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold gradient-text">24/7</div>
-                      <div className="text-[10px] text-ink-subtle">онлайн</div>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* Floating chips */}
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-                className="absolute -top-4 -left-6 glass-card-strong p-3 px-4 flex items-center gap-2 shadow-glow-sm"
-              >
-                <div className="w-2 h-2 rounded-full bg-mint-500 animate-pulse" />
-                <span className="text-sm font-medium">12 водителей рядом</span>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                className="absolute -bottom-6 -right-4 glass-card-strong p-3 px-4 shadow-glow-sm"
-              >
-                <div className="text-xs text-ink-subtle">Бишкек → Ош</div>
-                <div className="text-lg font-bold gradient-text">от 7 500 сом</div>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 4, repeat: Infinity, delay: 1.5 }}
-                className="absolute top-1/3 -right-8 glass-card-strong p-2 px-3 shadow-glow-sm"
-              >
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-mint-500" />
-                  <span className="text-xs font-medium">5 мин</span>
-                </div>
-              </motion.div>
             </motion.div>
-          </motion.div>
+          </div>
+
+          {/* Right: Phone mockup (5 cols) */}
+          <div className="lg:col-span-5 flex items-center justify-center relative">
+            {/* Glow behind phone */}
+            <motion.div
+              animate={{ opacity: [0.3, 0.6, 0.3], scale: [0.9, 1, 0.9] }}
+              transition={{ duration: 5, repeat: Infinity }}
+              className="absolute inset-0 rounded-full blur-3xl"
+              style={{
+                background:
+                  'radial-gradient(circle, rgba(99,102,241,0.4) 0%, rgba(168,85,247,0.3) 40%, transparent 70%)',
+              }}
+            />
+
+            <div className="relative z-10">
+              <PhoneMockup />
+            </div>
+
+            {/* Floating chips around phone */}
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
+              className="absolute top-12 -left-4 lg:left-2 glass-card-strong p-3 px-4 shadow-glow-sm hidden md:flex items-center gap-2 z-20"
+            >
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-mint-500 to-accent-500 flex items-center justify-center">
+                <Zap className="w-3.5 h-3.5 text-white" />
+              </div>
+              <div>
+                <div className="text-[10px] text-ink-subtle">Поездок сейчас</div>
+                <div className="text-base font-bold gradient-text leading-tight">
+                  <AnimatedCounter to={47} />
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              animate={{ y: [0, 10, 0] }}
+              transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+              className="absolute bottom-16 -right-4 lg:right-2 glass-card-strong p-3 px-4 shadow-glow-sm hidden md:flex items-center gap-2 z-20"
+            >
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center">
+                <ShieldCheck className="w-3.5 h-3.5 text-white" />
+              </div>
+              <div>
+                <div className="text-[10px] text-ink-subtle">Все водители</div>
+                <div className="text-sm font-bold text-ink leading-tight">Проверены</div>
+              </div>
+            </motion.div>
+          </div>
         </div>
-      </div>
+
+        {/* Live activity ticker */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="mt-12"
+        >
+          <LiveActivityTicker />
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

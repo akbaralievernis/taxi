@@ -5,7 +5,16 @@ import { Toaster } from 'react-hot-toast';
 import './globals.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://taxi-kg.example'),
+  metadataBase: new URL('https://taxi-puce.vercel.app'),
+  alternates: {
+    canonical: 'https://taxi-puce.vercel.app',
+    languages: {
+      'ru-RU': 'https://taxi-puce.vercel.app',
+      'ky-KG': 'https://taxi-puce.vercel.app',
+      'en-US': 'https://taxi-puce.vercel.app',
+      'x-default': 'https://taxi-puce.vercel.app',
+    },
+  },
   title: {
     default: 'Taxi KG — Такси по Кыргызстану | Бишкек, Ош, Каракол 24/7',
     template: '%s | Taxi KG',

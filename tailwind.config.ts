@@ -80,6 +80,8 @@ const config: Config = {
         'gradient': 'gradient 8s ease infinite',
         'glow': 'glow 3s ease-in-out infinite',
         'spin-slow': 'spin 20s linear infinite',
+        'shimmer': 'shimmer 2s linear infinite',
+        'marquee': 'marquee 40s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -105,6 +107,13 @@ const config: Config = {
         glow: {
           '0%, 100%': { opacity: '0.5' },
           '50%': { opacity: '1' },
+        },
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' },
+        },
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
         },
       },
       backgroundImage: {
