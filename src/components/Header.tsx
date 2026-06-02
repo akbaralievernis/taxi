@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Phone, Sparkles, Moon, Sun, User, ChevronDown } from 'lucide-react';
+import { Menu, X, Phone, Moon, Sun, User, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useLocale } from '@/lib/LocaleContext';
 import { useTheme } from '@/lib/ThemeContext';
+import Logo from './Logo';
 import { Locale } from '@/types';
 import { localeFlags, localeNames, locales } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
@@ -55,14 +56,18 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group shrink-0">
             <motion.div
-              whileHover={{ rotate: -10, scale: 1.05 }}
-              className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 via-purple-500 to-accent-500 flex items-center justify-center shadow-glow-sm"
+              whileHover={{ scale: 1.08 }}
+              transition={{ type: 'spring', stiffness: 400 }}
+              className="relative shrink-0"
             >
-              <Sparkles className="w-5 h-5 text-white" />
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary-400 to-accent-400 opacity-0 group-hover:opacity-100 blur-md transition-opacity" />
+              <Logo size={40} />
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary-400 to-accent-400 opacity-0 group-hover:opacity-30 blur-xl transition-opacity -z-10" />
             </motion.div>
             <div>
-              <div className="text-lg font-bold gradient-text leading-none">Taxi KG</div>
+              <div className="text-lg font-bold leading-none">
+                <span className="text-ink">TAXI </span>
+                <span className="gradient-text">KG</span>
+              </div>
               <div className="text-[10px] text-ink-subtle -mt-0.5">Бишкек • Ош • 24/7</div>
             </div>
           </Link>

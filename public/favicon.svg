@@ -1,10 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="32" height="32">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#fbbf24"/>
-      <stop offset="100%" stop-color="#d97706"/>
+    <linearGradient id="favGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
     </linearGradient>
   </defs>
-  <rect width="32" height="32" rx="6" fill="url(#bg)"/>
-  <text x="16" y="22" text-anchor="middle" fill="#0f172a" font-family="Arial" font-size="14" font-weight="900">T</text>
+  <rect width="200" height="200" rx="46" fill="#0f172a"/>
+  <g>
+    <path d="M 28 56 L 174 38 L 188 50 L 168 64 L 36 76 Z" fill="url(#favGrad)"/>
+    <path d="M 80 86 L 184 76 L 196 84 L 90 100 Z" fill="url(#favGrad)" opacity="0.75"/>
+    <path d="M 120 112 L 188 106 L 198 112 L 128 122 Z" fill="url(#favGrad)" opacity="0.45"/>
+    <path d="M 78 64 L 116 56 L 100 174 L 64 168 Z" fill="url(#favGrad)"/>
+  </g>
 </svg>

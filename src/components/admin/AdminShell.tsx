@@ -6,10 +6,11 @@ import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, ClipboardList, Users, DollarSign,
-  Settings, LogOut, Menu, X, Car, ChevronRight, Tag, Star
+  Settings, LogOut, Menu, X, ChevronRight, Tag, Star
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
+import Logo from '@/components/Logo';
 
 const navItems = [
   { href: '/admin/dashboard', label: 'Дашборд', icon: LayoutDashboard },
@@ -38,12 +39,13 @@ export default function AdminShell({ children, username }: { children: React.Rea
       <aside className="hidden lg:flex flex-col w-64 border-r border-border bg-surface/60 backdrop-blur-xl">
         <div className="p-6 border-b border-border">
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 via-purple-500 to-accent-500 flex items-center justify-center shadow-glow-sm">
-              <Car className="w-6 h-6 text-white" />
-            </div>
+            <Logo size={40} />
             <div>
-              <div className="font-bold gradient-text">Taxi KG</div>
-              <div className="text-xs text-ink-subtle">Admin Panel</div>
+              <div className="font-bold leading-none">
+                <span className="text-ink">TAXI </span>
+                <span className="gradient-text">KG</span>
+              </div>
+              <div className="text-xs text-ink-subtle mt-1">Admin Panel</div>
             </div>
           </Link>
         </div>
@@ -113,10 +115,11 @@ export default function AdminShell({ children, username }: { children: React.Rea
             >
               <div className="p-6 border-b border-border flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 via-purple-500 to-accent-500 flex items-center justify-center">
-                    <Car className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="font-bold gradient-text">Taxi KG</span>
+                  <Logo size={40} />
+                  <span className="font-bold">
+                    <span className="text-ink">TAXI </span>
+                    <span className="gradient-text">KG</span>
+                  </span>
                 </Link>
                 <button onClick={() => setSidebarOpen(false)} className="p-1">
                   <X className="w-6 h-6" />
@@ -166,7 +169,10 @@ export default function AdminShell({ children, username }: { children: React.Rea
           <button onClick={() => setSidebarOpen(true)} className="p-2">
             <Menu className="w-6 h-6" />
           </button>
-          <div className="font-bold gradient-text">Taxi KG Admin</div>
+          <div className="font-bold flex items-center gap-2">
+            <Logo size={24} />
+            <span><span className="text-ink">TAXI </span><span className="gradient-text">KG</span></span>
+          </div>
           <div className="w-10" />
         </header>
 

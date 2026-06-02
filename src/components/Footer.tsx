@@ -1,8 +1,9 @@
 'use client';
 
-import { Phone, Mail, MapPin, Send, Sparkles } from 'lucide-react';
+import { Phone, Mail, MapPin, Send } from 'lucide-react';
 import Link from 'next/link';
 import { useLocale } from '@/lib/LocaleContext';
+import Logo from './Logo';
 
 export default function Footer() {
   const { t } = useLocale();
@@ -14,13 +15,14 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           <div>
-            <Link href="/" className="flex items-center gap-2.5 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 via-purple-500 to-accent-500 flex items-center justify-center shadow-glow-sm">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
+            <Link href="/" className="flex items-center gap-2.5 mb-4 group">
+              <Logo size={44} className="shrink-0 group-hover:scale-105 transition" />
               <div>
-                <div className="text-xl font-bold gradient-text">Taxi KG</div>
-                <div className="text-xs text-ink-subtle">Бишкек • Ош • 24/7</div>
+                <div className="text-xl font-bold leading-none">
+                  <span className="text-ink">TAXI </span>
+                  <span className="gradient-text">KG</span>
+                </div>
+                <div className="text-xs text-ink-subtle mt-1">Бишкек • Ош • 24/7</div>
               </div>
             </Link>
             <p className="text-ink-muted text-sm leading-relaxed">{t.footer.description}</p>

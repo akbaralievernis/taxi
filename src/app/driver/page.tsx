@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Phone, LogIn, Loader2, Car } from 'lucide-react';
+import { Phone, LogIn, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Logo from '@/components/Logo';
 
 export default function DriverLogin() {
   const router = useRouter();
@@ -53,10 +54,15 @@ export default function DriverLogin() {
       >
         <div className="glass-card p-8">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
-              <Car className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold mb-1 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
+              className="w-16 h-16 mx-auto mb-4 flex items-center justify-center"
+            >
+              <Logo size={64} animated />
+            </motion.div>
+            <h1 className="text-2xl font-bold mb-1 gradient-text">
               Кабинет водителя
             </h1>
             <p className="text-ink-muted text-sm">Войдите по номеру телефона</p>

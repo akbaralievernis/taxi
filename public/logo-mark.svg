@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="lmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+    <filter id="lmGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g filter="url(#lmGlow)">
+    <!-- Top main bar of T (slanted forward, suggesting motion) -->
+    <path d="M 28 56 L 174 38 L 188 50 L 168 64 L 36 76 Z" fill="url(#lmGrad)"/>
+
+    <!-- Motion line 1 (medium length, slightly below) -->
+    <path d="M 80 86 L 184 76 L 196 84 L 90 100 Z" fill="url(#lmGrad)" opacity="0.75"/>
+
+    <!-- Motion line 2 (shorter, fading) -->
+    <path d="M 120 112 L 188 106 L 198 112 L 128 122 Z" fill="url(#lmGrad)" opacity="0.45"/>
+
+    <!-- Vertical stem of T -->
+    <path d="M 78 64 L 116 56 L 100 174 L 64 168 Z" fill="url(#lmGrad)"/>
+  </g>
+</svg>

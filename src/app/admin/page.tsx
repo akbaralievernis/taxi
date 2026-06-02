@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Lock, User, LogIn, Loader2, Car } from 'lucide-react';
+import { Lock, User, LogIn, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Logo from '@/components/Logo';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -52,11 +53,12 @@ export default function AdminLoginPage() {
         <div className="glass-card p-8">
           <div className="text-center mb-8">
             <motion.div
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary-500 via-purple-500 to-accent-500 flex items-center justify-center glow"
+              initial={{ scale: 0, rotate: -20 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
+              className="w-16 h-16 mx-auto mb-4 flex items-center justify-center"
             >
-              <Car className="w-8 h-8 text-white" />
+              <Logo size={64} animated />
             </motion.div>
             <h1 className="text-2xl font-bold gradient-text mb-1">Админ-панель</h1>
             <p className="text-ink-muted text-sm">Войдите для управления сайтом</p>
