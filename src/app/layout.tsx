@@ -43,7 +43,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#f59e0b',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f8fafc' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0e1a' },
+  ],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -55,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru" className="dark">
+    <html lang="ru" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -66,6 +69,24 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icon-192.svg" />
+        <meta name="theme-color" content="#0a0e1a" />
+        {/* Предотвращаем FOUC: применяем тему до отрисовки */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var stored = localStorage.getItem('theme');
+                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  var theme = stored || (prefersDark ? 'dark' : 'light');
+                  document.documentElement.classList.add(theme);
+                } catch (e) {
+                  document.documentElement.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body>
         <ThemeProvider>
@@ -74,13 +95,15 @@ export default function RootLayout({
             <Toaster
               position="top-center"
               toastOptions={{
+                className: 'react-hot-toast',
                 style: {
-                  background: 'rgba(15, 23, 42, 0.95)',
-                  color: '#fff',
-                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  background: 'rgb(var(--surface) / 0.95)',
+                  color: 'rgb(var(--ink))',
+                  border: '1px solid rgb(99 102 241 / 0.3)',
                   backdropFilter: 'blur(12px)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
                 },
-                success: { iconTheme: { primary: '#f59e0b', secondary: '#fff' } },
+                success: { iconTheme: { primary: '#6366f1', secondary: '#fff' } },
               }}
             />
           </LocaleProvider>

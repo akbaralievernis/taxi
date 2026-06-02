@@ -6,3 +6,5 @@ out
 *.log
 src/data/*.json
 !src/data/.gitkeep
+
+.vercel

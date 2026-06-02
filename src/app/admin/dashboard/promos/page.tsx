@@ -85,7 +85,7 @@ export default function PromosPage() {
           <h1 className="text-3xl md:text-4xl font-bold mb-2">
             <span className="gradient-text">Промокоды</span>
           </h1>
-          <p className="text-white/60">Скидки и акции для клиентов</p>
+          <p className="text-ink-muted">Скидки и акции для клиентов</p>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
@@ -153,10 +153,10 @@ export default function PromosPage() {
 
       {loading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-400" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
         </div>
       ) : promos.length === 0 ? (
-        <div className="glass-card p-12 text-center text-white/60">
+        <div className="glass-card p-12 text-center text-ink-muted">
           <Tag className="w-12 h-12 mx-auto mb-3 opacity-50" />
           Промокодов пока нет. Создайте первый!
         </div>
@@ -178,7 +178,7 @@ export default function PromosPage() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="text-2xl font-bold font-mono gradient-text">{promo.code}</div>
-                    <div className="text-sm text-white/60 flex items-center gap-1 mt-1">
+                    <div className="text-sm text-ink-muted flex items-center gap-1 mt-1">
                       <Percent className="w-3.5 h-3.5" />
                       Скидка {promo.discount}%
                     </div>
@@ -188,27 +188,27 @@ export default function PromosPage() {
                     className={cn(
                       'px-2 py-1 rounded text-xs border',
                       promo.isActive
-                        ? 'bg-green-500/20 border-green-500/40 text-green-300'
-                        : 'bg-white/5 border-white/10 text-white/60'
+                        ? 'bg-mint-500/20 border-mint-500/40 text-mint-600 dark:text-mint-400'
+                        : 'bg-surface-elevated border-border text-ink-muted'
                     )}
                   >
                     {promo.isActive ? 'Активен' : 'Выкл'}
                   </button>
                 </div>
 
-                <div className="space-y-1 text-xs text-white/60 mb-3">
+                <div className="space-y-1 text-xs text-ink-muted mb-3">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-3 h-3" />
                     До {formatDate(promo.validUntil)}
                   </div>
                   <div>Использовано: {promo.usedCount} / {promo.maxUses}</div>
-                  {expired && <div className="text-red-300">⚠ Истёк</div>}
-                  {used && <div className="text-yellow-300">⚠ Лимит исчерпан</div>}
+                  {expired && <div className="text-pink-600 dark:text-pink-400">⚠ Истёк</div>}
+                  {used && <div className="text-yellow-600 dark:text-yellow-400">⚠ Лимит исчерпан</div>}
                 </div>
 
                 <button
                   onClick={() => deletePromo(promo.id)}
-                  className="w-full px-3 py-1.5 rounded text-xs bg-white/5 border border-white/10 hover:bg-red-500/10 hover:text-red-300 transition flex items-center justify-center gap-1"
+                  className="w-full px-3 py-1.5 rounded text-xs bg-surface-elevated border border-border hover:bg-pink-500/10 hover:text-pink-600 dark:text-pink-400 transition flex items-center justify-center gap-1"
                 >
                   <Trash2 className="w-3 h-3" /> Удалить
                 </button>
@@ -219,8 +219,8 @@ export default function PromosPage() {
       )}
 
       <div className="glass-card p-4 bg-blue-500/5 border-blue-500/20 text-sm text-blue-200">
-        <strong>💡 Совет:</strong> Создайте промокоды типа <code className="px-1 bg-white/10 rounded">WELCOME10</code>,
-        <code className="px-1 bg-white/10 rounded ml-1">SUMMER20</code> для привлечения новых клиентов.
+        <strong>💡 Совет:</strong> Создайте промокоды типа <code className="px-1 bg-surface-elevated rounded">WELCOME10</code>,
+        <code className="px-1 bg-surface-elevated rounded ml-1">SUMMER20</code> для привлечения новых клиентов.
         Клиент может ввести их при заказе и получить скидку.
       </div>
     </div>

@@ -11,19 +11,19 @@ export default function FAQ() {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-20 relative">
-      <div className="container mx-auto px-4 max-w-4xl">
+    <section id="faq" className="py-24 relative">
+      <div className="container mx-auto px-4 max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/30 text-primary-300 text-sm mb-4">
-            <HelpCircle className="w-4 h-4" />
+          <div className="badge badge-primary mb-4">
+            <HelpCircle className="w-3 h-3" />
             FAQ
           </div>
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
             <span className="gradient-text">{t.faq.title}</span>
           </h2>
         </motion.div>
@@ -38,22 +38,27 @@ export default function FAQ() {
               transition={{ delay: i * 0.05 }}
               className={cn(
                 'glass-card overflow-hidden transition-all duration-300',
-                openIdx === i && 'border-primary-500/50'
+                openIdx === i && 'shadow-glow-sm'
               )}
             >
               <button
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
                 className="w-full px-6 py-4 flex items-center justify-between text-left group"
               >
-                <span className="font-semibold pr-4 group-hover:text-primary-400 transition-colors">
+                <span className="font-semibold pr-4 text-ink group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors">
                   {item.q}
                 </span>
                 <motion.div
                   animate={{ rotate: openIdx === i ? 180 : 0 }}
                   transition={{ duration: 0.3 }}
-                  className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center"
+                  className={cn(
+                    'shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all',
+                    openIdx === i
+                      ? 'bg-gradient-to-br from-primary-500 to-purple-500 text-white shadow-glow-sm'
+                      : 'bg-surface-elevated text-ink-muted'
+                  )}
                 >
-                  <ChevronDown className="w-4 h-4 text-primary-400" />
+                  <ChevronDown className="w-4 h-4" />
                 </motion.div>
               </button>
 
@@ -65,7 +70,7 @@ export default function FAQ() {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="px-6 pb-4 text-white/70 leading-relaxed border-t border-white/5 pt-4">
+                    <div className="px-6 pb-4 text-ink-muted leading-relaxed border-t border-border pt-4">
                       {item.a}
                     </div>
                   </motion.div>

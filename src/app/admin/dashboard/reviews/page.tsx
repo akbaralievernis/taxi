@@ -61,7 +61,7 @@ export default function ReviewsAdminPage() {
         <h1 className="text-3xl md:text-4xl font-bold mb-2">
           <span className="gradient-text">Отзывы</span>
         </h1>
-        <p className="text-white/60">Модерация отзывов клиентов</p>
+        <p className="text-ink-muted">Модерация отзывов клиентов</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -73,7 +73,7 @@ export default function ReviewsAdminPage() {
               'px-4 py-2 rounded-lg text-sm border transition',
               filter === f
                 ? 'bg-primary-500 border-primary-400 text-white'
-                : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                : 'bg-surface-elevated border-border text-ink-muted hover:bg-surface-elevated'
             )}
           >
             {f === 'all' ? 'Все' : f === 'pending' ? 'Ожидают модерации' : 'Опубликованные'}
@@ -83,10 +83,10 @@ export default function ReviewsAdminPage() {
 
       {loading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-400" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="glass-card p-12 text-center text-white/60">
+        <div className="glass-card p-12 text-center text-ink-muted">
           <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-50" />
           Отзывов нет
         </div>
@@ -106,34 +106,34 @@ export default function ReviewsAdminPage() {
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-white/20'}`}
+                        className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-ink-subtle'}`}
                       />
                     ))}
-                    {review.city && <span className="text-xs text-white/40 ml-2">{review.city}</span>}
+                    {review.city && <span className="text-xs text-ink-subtle ml-2">{review.city}</span>}
                   </div>
                 </div>
                 <div className={cn(
                   'px-3 py-1 rounded-full text-xs border',
                   review.isPublished
-                    ? 'bg-green-500/20 border-green-500/40 text-green-300'
-                    : 'bg-yellow-500/20 border-yellow-500/40 text-yellow-300'
+                    ? 'bg-mint-500/20 border-mint-500/40 text-mint-600 dark:text-mint-400'
+                    : 'bg-yellow-500/20 border-yellow-500/40 text-yellow-600 dark:text-yellow-400'
                 )}>
                   {review.isPublished ? 'Опубликован' : 'Модерация'}
                 </div>
               </div>
 
-              <p className="text-white/80 mb-3 italic">«{review.text}»</p>
+              <p className="text-ink-muted mb-3 italic">«{review.text}»</p>
 
               <div className="flex items-center justify-between flex-wrap gap-2">
-                <div className="text-xs text-white/40">{formatDate(review.createdAt)}</div>
+                <div className="text-xs text-ink-subtle">{formatDate(review.createdAt)}</div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => togglePublished(review)}
                     className={cn(
                       'px-3 py-1.5 rounded text-xs border flex items-center gap-1 transition',
                       review.isPublished
-                        ? 'bg-white/5 border-white/10 hover:bg-white/10'
-                        : 'bg-green-500/20 border-green-500/40 text-green-300 hover:bg-green-500/30'
+                        ? 'bg-surface-elevated border-border hover:bg-surface-elevated'
+                        : 'bg-mint-500/20 border-mint-500/40 text-mint-600 dark:text-mint-400 hover:bg-green-500/30'
                     )}
                   >
                     {review.isPublished ? <XCircle className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
@@ -141,7 +141,7 @@ export default function ReviewsAdminPage() {
                   </button>
                   <button
                     onClick={() => deleteReview(review.id)}
-                    className="px-3 py-1.5 rounded text-xs bg-white/5 border border-white/10 hover:bg-red-500/10 hover:text-red-300 transition flex items-center gap-1"
+                    className="px-3 py-1.5 rounded text-xs bg-surface-elevated border border-border hover:bg-pink-500/10 hover:text-pink-600 dark:text-pink-400 transition flex items-center gap-1"
                   >
                     <Trash2 className="w-3.5 h-3.5" /> Удалить
                   </button>

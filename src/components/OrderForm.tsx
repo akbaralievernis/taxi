@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPin, Calendar, Users, Briefcase, Car, MessageSquare,
   Phone, User, CreditCard, CheckCircle2, Loader2, ArrowRight,
-  Wallet, Clock, Sparkles, Tag, X
+  Wallet, Clock, Sparkles, Tag, X, Hash
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useLocale } from '@/lib/LocaleContext';
@@ -45,6 +45,9 @@ const initialData: OrderFormData = {
   paymentMethod: 'cash',
   comment: '',
 };
+
+const selectedBtn = 'bg-gradient-to-r from-primary-500 to-purple-500 border-transparent text-white shadow-glow-sm';
+const idleBtn = 'bg-surface-elevated border-border text-ink-muted hover:bg-surface hover:border-primary-400/40 hover:text-ink';
 
 export default function OrderForm() {
   const { t } = useLocale();
@@ -88,7 +91,6 @@ export default function OrderForm() {
     setPromoCode('');
   };
 
-  // Расчёт цены в реальном времени
   useEffect(() => {
     const calc = async () => {
       if (!data.fromCity || !data.toCity) return;
@@ -169,6 +171,8 @@ export default function OrderForm() {
   const resetForm = () => {
     setData(initialData);
     setSuccess(null);
+    setPromoApplied(null);
+    setPromoCode('');
   };
 
   if (success) {
@@ -176,34 +180,50 @@ export default function OrderForm() {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass-card p-8 md:p-12 text-center max-w-2xl mx-auto"
+        className="glass-card p-8 md:p-12 text-center max-w-2xl mx-auto relative overflow-hidden"
       >
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', delay: 0.2 }}
-          className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center"
-        >
-          <CheckCircle2 className="w-12 h-12 text-white" />
-        </motion.div>
+        <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-mint-500/20 blur-3xl" />
+        <div className="absolute -bottom-20 -right-20 w-64 h-64 rounded-full bg-primary-500/20 blur-3xl" />
 
-        <h3 className="text-3xl font-bold mb-2 gradient-text">{t.order.success}</h3>
-        <p className="text-white/70 mb-6">{t.order.successText}</p>
+        <div className="relative">
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: 'spring', delay: 0.2, stiffness: 200 }}
+            className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-mint-400 via-mint-500 to-accent-500 flex items-center justify-center shadow-glow"
+          >
+            <CheckCircle2 className="w-14 h-14 text-white" />
+          </motion.div>
 
-        <div className="glass-card p-4 mb-6 inline-block">
-          <div className="text-xs text-white/40 mb-1">{t.order.orderNumber}</div>
-          <div className="text-xl font-mono font-bold text-primary-400">{success.id}</div>
+          <h3 className="text-3xl md:text-4xl font-bold mb-3 gradient-text">{t.order.success}</h3>
+          <p className="text-ink-muted mb-8 text-lg">{t.order.successText}</p>
+
+          <div className="glass-card p-5 mb-4 inline-flex items-center gap-3">
+            <Hash className="w-5 h-5 text-primary-500" />
+            <div className="text-left">
+              <div className="text-xs text-ink-subtle uppercase tracking-wider mb-0.5">{t.order.orderNumber}</div>
+              <div className="text-lg font-mono font-bold text-ink">{success.id}</div>
+            </div>
+          </div>
+
+          <div className="glass-card p-5 mb-6">
+            <div className="text-sm text-ink-muted mb-1">{t.order.estimatedPrice}</div>
+            <div className="text-4xl font-bold gradient-text">{formatPrice(success.price)}</div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href={`/track`}
+              className="btn-secondary inline-flex items-center gap-2 justify-center"
+            >
+              Отследить заказ
+            </a>
+            <button onClick={resetForm} className="btn-primary inline-flex items-center gap-2 justify-center">
+              {t.order.newOrder}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
-
-        <div className="glass-card p-4 mb-6">
-          <div className="text-sm text-white/60">{t.order.estimatedPrice}</div>
-          <div className="text-3xl font-bold gradient-text">{formatPrice(success.price)}</div>
-        </div>
-
-        <button onClick={resetForm} className="btn-primary inline-flex items-center gap-2">
-          {t.order.newOrder}
-          <ArrowRight className="w-4 h-4" />
-        </button>
       </motion.div>
     );
   }
@@ -214,13 +234,13 @@ export default function OrderForm() {
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="glass-card p-6 md:p-8 max-w-4xl mx-auto"
+      className="glass-card-strong p-6 md:p-8 max-w-4xl mx-auto shadow-glow-sm"
     >
       <div className="grid md:grid-cols-2 gap-5">
         {/* Имя */}
         <div>
           <label className="label-field">
-            <User className="w-4 h-4 inline mr-2" />
+            <User className="w-4 h-4 inline mr-2 text-primary-500" />
             {t.order.name}
           </label>
           <input
@@ -236,7 +256,7 @@ export default function OrderForm() {
         {/* Телефон */}
         <div>
           <label className="label-field">
-            <Phone className="w-4 h-4 inline mr-2" />
+            <Phone className="w-4 h-4 inline mr-2 text-primary-500" />
             {t.order.phone}
           </label>
           <input
@@ -252,7 +272,7 @@ export default function OrderForm() {
         {/* Город ОТКУДА */}
         <div>
           <label className="label-field">
-            <MapPin className="w-4 h-4 inline mr-2 text-green-400" />
+            <MapPin className="w-4 h-4 inline mr-2 text-mint-500" />
             {t.order.fromCity}
           </label>
           <select
@@ -260,14 +280,14 @@ export default function OrderForm() {
             onChange={(e) => update('fromCity', e.target.value)}
             className="input-field appearance-none cursor-pointer"
           >
-            {cities.map(c => <option key={c} value={c} className="bg-dark-800">{c}</option>)}
+            {cities.map(c => <option key={c} value={c} className="bg-surface-elevated text-ink">{c}</option>)}
           </select>
         </div>
 
         {/* Город КУДА */}
         <div>
           <label className="label-field">
-            <MapPin className="w-4 h-4 inline mr-2 text-red-400" />
+            <MapPin className="w-4 h-4 inline mr-2 text-pink-500" />
             {t.order.toCity}
           </label>
           <select
@@ -275,7 +295,7 @@ export default function OrderForm() {
             onChange={(e) => update('toCity', e.target.value)}
             className="input-field appearance-none cursor-pointer"
           >
-            {cities.map(c => <option key={c} value={c} className="bg-dark-800">{c}</option>)}
+            {cities.map(c => <option key={c} value={c} className="bg-surface-elevated text-ink">{c}</option>)}
           </select>
         </div>
 
@@ -308,7 +328,7 @@ export default function OrderForm() {
         {/* Когда */}
         <div className="md:col-span-2">
           <label className="label-field">
-            <Calendar className="w-4 h-4 inline mr-2" />
+            <Calendar className="w-4 h-4 inline mr-2 text-primary-500" />
             {t.order.when}
           </label>
           <div className="grid grid-cols-2 gap-3 mb-3">
@@ -316,10 +336,8 @@ export default function OrderForm() {
               type="button"
               onClick={() => update('whenType', 'now')}
               className={cn(
-                'py-3 rounded-xl border transition-all flex items-center justify-center gap-2',
-                data.whenType === 'now'
-                  ? 'bg-primary-500 border-primary-400 text-white'
-                  : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                'py-3 rounded-xl border transition-all flex items-center justify-center gap-2 font-medium',
+                data.whenType === 'now' ? selectedBtn : idleBtn
               )}
             >
               <Clock className="w-4 h-4" />
@@ -329,10 +347,8 @@ export default function OrderForm() {
               type="button"
               onClick={() => update('whenType', 'later')}
               className={cn(
-                'py-3 rounded-xl border transition-all flex items-center justify-center gap-2',
-                data.whenType === 'later'
-                  ? 'bg-primary-500 border-primary-400 text-white'
-                  : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                'py-3 rounded-xl border transition-all flex items-center justify-center gap-2 font-medium',
+                data.whenType === 'later' ? selectedBtn : idleBtn
               )}
             >
               <Calendar className="w-4 h-4" />
@@ -363,22 +379,22 @@ export default function OrderForm() {
         {/* Пассажиры */}
         <div>
           <label className="label-field">
-            <Users className="w-4 h-4 inline mr-2" />
+            <Users className="w-4 h-4 inline mr-2 text-primary-500" />
             {t.order.passengers}
           </label>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 glass-card p-1">
             <button
               type="button"
               onClick={() => update('passengers', Math.max(1, data.passengers - 1))}
-              className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 transition border border-white/10"
+              className="w-10 h-10 rounded-lg bg-surface-elevated hover:bg-primary-500/10 hover:text-primary-500 transition font-bold text-lg"
             >
               −
             </button>
-            <div className="flex-1 text-center text-xl font-bold">{data.passengers}</div>
+            <div className="flex-1 text-center text-xl font-bold text-ink">{data.passengers}</div>
             <button
               type="button"
               onClick={() => update('passengers', Math.min(8, data.passengers + 1))}
-              className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 transition border border-white/10"
+              className="w-10 h-10 rounded-lg bg-surface-elevated hover:bg-primary-500/10 hover:text-primary-500 transition font-bold text-lg"
             >
               +
             </button>
@@ -388,22 +404,22 @@ export default function OrderForm() {
         {/* Багаж */}
         <div>
           <label className="label-field">
-            <Briefcase className="w-4 h-4 inline mr-2" />
+            <Briefcase className="w-4 h-4 inline mr-2 text-primary-500" />
             {t.order.luggage}
           </label>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 glass-card p-1">
             <button
               type="button"
               onClick={() => update('luggage', Math.max(0, data.luggage - 1))}
-              className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 transition border border-white/10"
+              className="w-10 h-10 rounded-lg bg-surface-elevated hover:bg-primary-500/10 hover:text-primary-500 transition font-bold text-lg"
             >
               −
             </button>
-            <div className="flex-1 text-center text-xl font-bold">{data.luggage}</div>
+            <div className="flex-1 text-center text-xl font-bold text-ink">{data.luggage}</div>
             <button
               type="button"
               onClick={() => update('luggage', Math.min(10, data.luggage + 1))}
-              className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 transition border border-white/10"
+              className="w-10 h-10 rounded-lg bg-surface-elevated hover:bg-primary-500/10 hover:text-primary-500 transition font-bold text-lg"
             >
               +
             </button>
@@ -413,7 +429,7 @@ export default function OrderForm() {
         {/* Класс авто */}
         <div className="md:col-span-2">
           <label className="label-field">
-            <Car className="w-4 h-4 inline mr-2" />
+            <Car className="w-4 h-4 inline mr-2 text-primary-500" />
             {t.order.carClass}
           </label>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
@@ -424,9 +440,7 @@ export default function OrderForm() {
                 onClick={() => update('carClass', cls)}
                 className={cn(
                   'py-3 px-2 rounded-xl border transition-all text-sm font-medium',
-                  data.carClass === cls
-                    ? 'bg-primary-500 border-primary-400 text-white shadow-lg shadow-primary-500/30'
-                    : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                  data.carClass === cls ? selectedBtn : idleBtn
                 )}
               >
                 {t.tariffs.classes[cls].name}
@@ -438,7 +452,7 @@ export default function OrderForm() {
         {/* Оплата */}
         <div className="md:col-span-2">
           <label className="label-field">
-            <CreditCard className="w-4 h-4 inline mr-2" />
+            <CreditCard className="w-4 h-4 inline mr-2 text-primary-500" />
             {t.order.payment}
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -446,10 +460,8 @@ export default function OrderForm() {
               type="button"
               onClick={() => update('paymentMethod', 'cash')}
               className={cn(
-                'py-3 rounded-xl border transition-all flex items-center justify-center gap-2',
-                data.paymentMethod === 'cash'
-                  ? 'bg-primary-500 border-primary-400 text-white'
-                  : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                'py-3 rounded-xl border transition-all flex items-center justify-center gap-2 font-medium',
+                data.paymentMethod === 'cash' ? selectedBtn : idleBtn
               )}
             >
               <Wallet className="w-4 h-4" />
@@ -459,10 +471,8 @@ export default function OrderForm() {
               type="button"
               onClick={() => update('paymentMethod', 'card')}
               className={cn(
-                'py-3 rounded-xl border transition-all flex items-center justify-center gap-2',
-                data.paymentMethod === 'card'
-                  ? 'bg-primary-500 border-primary-400 text-white'
-                  : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                'py-3 rounded-xl border transition-all flex items-center justify-center gap-2 font-medium',
+                data.paymentMethod === 'card' ? selectedBtn : idleBtn
               )}
             >
               <CreditCard className="w-4 h-4" />
@@ -474,7 +484,7 @@ export default function OrderForm() {
         {/* Комментарий */}
         <div className="md:col-span-2">
           <label className="label-field">
-            <MessageSquare className="w-4 h-4 inline mr-2" />
+            <MessageSquare className="w-4 h-4 inline mr-2 text-primary-500" />
             {t.order.comment}
           </label>
           <textarea
@@ -490,18 +500,22 @@ export default function OrderForm() {
       {/* Промокод */}
       <div className="mt-5">
         <label className="label-field">
-          <Tag className="w-4 h-4 inline mr-2" />
+          <Tag className="w-4 h-4 inline mr-2 text-mint-500" />
           Промокод (если есть)
         </label>
         {promoApplied ? (
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-green-500/10 border border-green-500/30">
-            <CheckCircle2 className="w-5 h-5 text-green-400" />
-            <span className="flex-1 font-mono font-semibold text-green-300">{promoApplied.code}</span>
-            <span className="text-green-300 text-sm">−{promoApplied.discount}%</span>
-            <button type="button" onClick={removePromo} className="p-1 hover:bg-white/10 rounded">
-              <X className="w-4 h-4" />
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="flex items-center gap-2 p-3 rounded-xl bg-mint-500/10 border border-mint-500/40"
+          >
+            <CheckCircle2 className="w-5 h-5 text-mint-500" />
+            <span className="flex-1 font-mono font-semibold text-mint-600 dark:text-mint-400">{promoApplied.code}</span>
+            <span className="text-mint-600 dark:text-mint-400 text-sm font-semibold">−{promoApplied.discount}%</span>
+            <button type="button" onClick={removePromo} className="p-1 hover:bg-surface-elevated rounded transition">
+              <X className="w-4 h-4 text-ink-muted" />
             </button>
-          </div>
+          </motion.div>
         ) : (
           <div className="flex gap-2">
             <input
@@ -514,8 +528,8 @@ export default function OrderForm() {
             <button
               type="button"
               onClick={applyPromo}
-              disabled={promoChecking}
-              className="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition disabled:opacity-50"
+              disabled={promoChecking || !promoCode.trim()}
+              className="px-5 py-3 rounded-xl bg-surface-elevated hover:bg-primary-500 hover:text-white border border-border transition disabled:opacity-50 font-medium"
             >
               {promoChecking ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Применить'}
             </button>
@@ -526,47 +540,52 @@ export default function OrderForm() {
       {/* Цена и кнопка */}
       <motion.div
         layout
-        className="mt-6 p-5 rounded-xl bg-gradient-to-r from-primary-500/20 to-primary-600/10 border border-primary-500/30"
+        className="mt-6 p-6 rounded-2xl bg-gradient-to-br from-primary-500/15 via-purple-500/10 to-accent-500/10 border border-primary-500/30 relative overflow-hidden"
       >
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <div className="flex items-center gap-2 text-white/70 text-sm mb-1">
-              <Sparkles className="w-4 h-4 text-primary-400" />
-              {t.order.estimatedPrice}
-            </div>
-            {promoApplied && estimatedPrice > 0 && (
-              <div className="text-lg text-white/40 line-through">{formatPrice(estimatedPrice)}</div>
-            )}
-            <div className="text-3xl md:text-4xl font-bold gradient-text">
-              {formatPrice(finalPrice)}
-            </div>
-            {promoApplied && (
-              <div className="text-sm text-green-300 mt-1">
-                Скидка по промокоду {promoApplied.code}: −{formatPrice(estimatedPrice - finalPrice)}
-              </div>
-            )}
-          </div>
-        </div>
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary-500/20 rounded-full blur-3xl" />
 
-        <motion.button
-          type="submit"
-          disabled={submitting}
-          whileHover={{ scale: submitting ? 1 : 1.02 }}
-          whileTap={{ scale: submitting ? 1 : 0.98 }}
-          className="btn-primary w-full text-lg flex items-center justify-center gap-2 disabled:opacity-60"
-        >
-          {submitting ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              {t.order.submitting}
-            </>
-          ) : (
-            <>
-              {t.order.submit}
-              <ArrowRight className="w-5 h-5" />
-            </>
-          )}
-        </motion.button>
+        <div className="relative">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <div className="flex items-center gap-2 text-ink-muted text-sm mb-2">
+                <Sparkles className="w-4 h-4 text-primary-500" />
+                {t.order.estimatedPrice}
+              </div>
+              {promoApplied && estimatedPrice > 0 && (
+                <div className="text-lg text-ink-subtle line-through">{formatPrice(estimatedPrice)}</div>
+              )}
+              <div className="text-3xl md:text-5xl font-bold gradient-text">
+                {formatPrice(finalPrice)}
+              </div>
+              {promoApplied && (
+                <div className="text-sm text-mint-600 dark:text-mint-400 mt-2 font-medium">
+                  Скидка {promoApplied.code}: −{formatPrice(estimatedPrice - finalPrice)}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <motion.button
+            type="submit"
+            disabled={submitting}
+            whileHover={{ scale: submitting ? 1 : 1.02 }}
+            whileTap={{ scale: submitting ? 1 : 0.98 }}
+            className="btn-primary w-full text-lg flex items-center justify-center gap-2 disabled:opacity-60 py-4"
+          >
+            {submitting ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                {t.order.submitting}
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-5 h-5" />
+                {t.order.submit}
+                <ArrowRight className="w-5 h-5" />
+              </>
+            )}
+          </motion.button>
+        </div>
       </motion.div>
     </motion.form>
   );

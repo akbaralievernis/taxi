@@ -10,7 +10,7 @@ export default function SettingsPage() {
         <h1 className="text-3xl md:text-4xl font-bold mb-2">
           <span className="gradient-text">Настройки</span>
         </h1>
-        <p className="text-white/60">Общие настройки сайта</p>
+        <p className="text-ink-muted">Общие настройки сайта</p>
       </div>
 
       <motion.div
@@ -19,7 +19,7 @@ export default function SettingsPage() {
         className="glass-card p-6"
       >
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-          <Globe className="w-5 h-5 text-primary-400" />
+          <Globe className="w-5 h-5 text-primary-500" />
           Контактная информация
         </h2>
 
@@ -56,37 +56,37 @@ export default function SettingsPage() {
         transition={{ delay: 0.1 }}
         className="glass-card p-6 bg-yellow-500/5 border-yellow-500/20"
       >
-        <h2 className="text-xl font-bold mb-3 flex items-center gap-2 text-yellow-300">
+        <h2 className="text-xl font-bold mb-3 flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
           <AlertCircle className="w-5 h-5" />
           Что добавить дальше (рекомендации)
         </h2>
-        <ul className="space-y-2 text-white/70 text-sm">
+        <ul className="space-y-2 text-ink-muted text-sm">
           <li className="flex items-start gap-2">
-            <span className="text-primary-400 mt-1">→</span>
+            <span className="text-primary-500 mt-1">→</span>
             <span><strong>Интеграция 2GIS</strong> — карты с автокомплитом адресов и live-трекингом водителя</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-primary-400 mt-1">→</span>
+            <span className="text-primary-500 mt-1">→</span>
             <span><strong>SMS-подтверждение заказа</strong> — через NikitaSMS или SMSC.kg</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-primary-400 mt-1">→</span>
+            <span className="text-primary-500 mt-1">→</span>
             <span><strong>Платежи</strong> — MBank, O!Dengi, FreedomPay для карт</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-primary-400 mt-1">→</span>
+            <span className="text-primary-500 mt-1">→</span>
             <span><strong>Telegram-бот</strong> — для уведомлений водителей о новых заказах</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-primary-400 mt-1">→</span>
+            <span className="text-primary-500 mt-1">→</span>
             <span><strong>База PostgreSQL</strong> — заменить JSON-файлы на полноценную БД</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-primary-400 mt-1">→</span>
+            <span className="text-primary-500 mt-1">→</span>
             <span><strong>Промокоды и реферальная программа</strong> — для роста аудитории</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-primary-400 mt-1">→</span>
+            <span className="text-primary-500 mt-1">→</span>
             <span><strong>Мобильное приложение</strong> — обернуть в Capacitor для iOS/Android</span>
           </li>
         </ul>

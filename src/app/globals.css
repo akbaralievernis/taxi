@@ -3,16 +3,48 @@
 @tailwind utilities;
 
 @layer base {
+  /* ===== СВЕТЛАЯ ТЕМА (по умолчанию) ===== */
   :root {
-    --bg-from: #0f172a;
-    --bg-to: #1e293b;
-    --text-color: #f8fafc;
+    --surface: 255 255 255;
+    --surface-elevated: 248 250 252;
+    --surface-muted: 241 245 249;
+
+    --ink: 15 23 42;
+    --ink-muted: 51 65 85;
+    --ink-subtle: 100 116 139;
+
+    --border: 226 232 240;
+    --border-strong: 203 213 225;
+
+    --bg-from: #f8fafc;
+    --bg-to: #eef2ff;
+    --bg-mesh-opacity: 0.6;
+
+    --shadow-color: 0 0 0;
+    --glass-bg: 255 255 255;
+    --glass-border: 226 232 240;
   }
 
-  html.light {
-    --bg-from: #f1f5f9;
-    --bg-to: #e2e8f0;
-    --text-color: #0f172a;
+  /* ===== ТЁМНАЯ ТЕМА ===== */
+  .dark {
+    --surface: 15 23 42;
+    --surface-elevated: 30 41 59;
+    --surface-muted: 51 65 85;
+
+    --ink: 248 250 252;
+    --ink-muted: 203 213 225;
+    --ink-subtle: 148 163 184;
+
+    --border: 51 65 85;
+    --border-strong: 71 85 105;
+
+    --bg-from: #0a0e1a;
+    --bg-to: #131829;
+    --bg-mesh-opacity: 0.4;
+
+    --shadow-color: 0 0 0;
+    --glass-bg: 30 41 59;
+    --glass-border: 51 65 85;
   }
 
   * {
@@ -26,87 +58,169 @@
   }
 
   body {
-    background: linear-gradient(180deg, var(--bg-from) 0%, var(--bg-to) 100%);
-    color: var(--text-color);
+    background:
+      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(168, 85, 247, 0.12) 0%, transparent 50%),
+      linear-gradient(180deg, var(--bg-from) 0%, var(--bg-to) 100%);
+    background-attachment: fixed;
+    color: rgb(var(--ink));
     min-height: 100vh;
     font-family: 'Inter', system-ui, sans-serif;
-    transition: background 0.3s ease, color 0.3s ease;
-  }
-
-  html.light body {
-    background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
-  }
-
-  html.light .glass-card {
-    @apply bg-white/60 border-dark-200 backdrop-blur-xl;
-  }
-
-  html.light .input-field {
-    @apply bg-white/80 border-dark-200 text-dark-900 placeholder-dark-400 focus:bg-white;
-  }
-
-  html.light .label-field {
-    @apply text-dark-700;
-  }
-
-  html.light .grid-pattern {
-    background-image:
-      linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+    transition: background 0.4s ease, color 0.3s ease;
   }
 
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
   }
 
   ::-webkit-scrollbar-track {
-    background: rgb(15 23 42);
+    background: rgb(var(--surface));
   }
 
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #f59e0b, #d97706);
-    border-radius: 5px;
+    background: linear-gradient(180deg, #6366f1, #a855f7);
+    border-radius: 6px;
+    border: 2px solid rgb(var(--surface));
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #fbbf24, #f59e0b);
+    background: linear-gradient(180deg, #818cf8, #c084fc);
+  }
+
+  ::selection {
+    background: rgba(99, 102, 241, 0.3);
+    color: rgb(var(--ink));
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300
-           bg-gradient-to-r from-primary-500 to-primary-600
-           hover:from-primary-400 hover:to-primary-500
-           hover:scale-105 hover:shadow-lg hover:shadow-primary-500/50
-           active:scale-95 text-white;
+    @apply relative px-6 py-3 rounded-xl font-semibold transition-all duration-300
+           bg-gradient-to-r from-primary-500 to-purple-500
+           hover:from-primary-400 hover:to-purple-400
+           hover:scale-[1.02] hover:shadow-glow
+           active:scale-[0.98] text-white
+           shadow-glow-sm
+           overflow-hidden;
+  }
+
+  .btn-primary::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0;
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+
+  .btn-primary:hover::before {
+    transform: translateX(100%);
   }
 
   .btn-secondary {
     @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300
-           bg-white/10 backdrop-blur-md border border-white/20
-           hover:bg-white/20 hover:scale-105
-           active:scale-95 text-white;
+           bg-surface/60 backdrop-blur-md border border-border
+           hover:bg-surface hover:border-primary-400/50 hover:scale-[1.02]
+           active:scale-[0.98]
+           text-ink;
   }
 
+  .btn-accent {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300
+           bg-gradient-to-r from-mint-500 to-accent-500
+           hover:from-mint-400 hover:to-accent-400
+           hover:scale-[1.02] hover:shadow-glow-accent
+           active:scale-[0.98] text-white;
+  }
+
+  /* Стеклянные карточки — адаптивные к теме */
   .glass-card {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
+    @apply rounded-2xl border border-border;
+    background: rgba(var(--glass-bg), 0.6);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow:
+      0 4px 24px -1px rgba(var(--shadow-color), 0.08),
+      0 1px 0 0 rgba(255, 255, 255, 0.05) inset;
   }
 
+  .dark .glass-card {
+    background: rgba(30, 41, 59, 0.5);
+    border-color: rgba(99, 102, 241, 0.15);
+    box-shadow:
+      0 4px 24px -1px rgba(0, 0, 0, 0.4),
+      0 1px 0 0 rgba(255, 255, 255, 0.05) inset;
+  }
+
+  .glass-card-strong {
+    @apply rounded-2xl border;
+    background: rgba(var(--glass-bg), 0.85);
+    border-color: rgba(var(--border), 1);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
+  }
+
+  .dark .glass-card-strong {
+    background: rgba(30, 41, 59, 0.75);
+    border-color: rgba(99, 102, 241, 0.2);
+  }
+
+  /* Градиентный текст */
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-primary-600;
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%);
   }
 
+  .dark .gradient-text {
+    background-image: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #22d3ee 100%);
+  }
+
+  .gradient-text-purple {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  }
+
+  /* Поля ввода */
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10
-           text-white placeholder-white/40
-           focus:outline-none focus:border-primary-500 focus:bg-white/10
-           transition-all duration-300;
+    @apply w-full px-4 py-3 rounded-xl
+           border border-border
+           text-ink placeholder-ink-subtle
+           focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20
+           transition-all duration-200;
+    background: rgba(var(--glass-bg), 0.5);
+  }
+
+  .dark .input-field {
+    background: rgba(15, 23, 42, 0.5);
+  }
+
+  .input-field:focus {
+    background: rgba(var(--surface), 1);
   }
 
   .label-field {
-    @apply block text-sm font-medium text-white/80 mb-2;
+    @apply block text-sm font-medium text-ink-muted mb-2;
+  }
+
+  /* Бейджи */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border;
+  }
+
+  .badge-primary {
+    @apply bg-primary-500/10 border-primary-500/30 text-primary-600;
+  }
+
+  .dark .badge-primary {
+    @apply text-primary-300;
+  }
+
+  .badge-accent {
+    @apply bg-accent-500/10 border-accent-500/30 text-accent-600;
+  }
+
+  .dark .badge-accent {
+    @apply text-accent-300;
   }
 }
 
@@ -120,14 +234,53 @@
     animation: gradient 8s ease infinite;
   }
 
-  .glow {
-    box-shadow: 0 0 40px rgba(245, 158, 11, 0.3);
+  .glow-primary {
+    box-shadow: 0 0 60px rgba(99, 102, 241, 0.4);
   }
 
+  .glow-accent {
+    box-shadow: 0 0 60px rgba(6, 182, 212, 0.4);
+  }
+
+  /* Сетчатый паттерн фона */
   .grid-pattern {
     background-image:
-      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      linear-gradient(rgba(99, 102, 241, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.07) 1px, transparent 1px);
     background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
   }
+
+  /* Декоративные орбы */
+  .orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    pointer-events: none;
+    opacity: var(--bg-mesh-opacity);
+  }
+
+  /* Glass mesh декорация — Stripe-style */
+  .mesh-bg {
+    background-image:
+      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.4) 0%, transparent 40%),
+      radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.3) 0%, transparent 40%),
+      radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.3) 0%, transparent 40%);
+  }
+
+  .text-ink { color: rgb(var(--ink)); }
+  .text-ink-muted { color: rgb(var(--ink-muted)); }
+  .text-ink-subtle { color: rgb(var(--ink-subtle)); }
+  .bg-surface { background-color: rgb(var(--surface)); }
+  .bg-surface-elevated { background-color: rgb(var(--surface-elevated)); }
+  .bg-surface-muted { background-color: rgb(var(--surface-muted)); }
+  .border-border { border-color: rgb(var(--border)); }
+}
+
+/* Стили для toast-уведомлений */
+.dark .react-hot-toast > div {
+  background: rgba(30, 41, 59, 0.95) !important;
+  color: rgb(248, 250, 252) !important;
+  border: 1px solid rgba(99, 102, 241, 0.3) !important;
 }

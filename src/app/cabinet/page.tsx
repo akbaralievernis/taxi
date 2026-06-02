@@ -82,7 +82,7 @@ export default function CustomerCabinet() {
 
       <section className="pt-32 pb-20">
         <div className="container mx-auto px-4 max-w-4xl">
-          <Link href="/" className="inline-flex items-center gap-2 text-white/60 hover:text-primary-400 mb-6 transition">
+          <Link href="/" className="inline-flex items-center gap-2 text-ink-muted hover:text-primary-500 mb-6 transition">
             <ArrowLeft className="w-4 h-4" /> На главную
           </Link>
 
@@ -90,7 +90,7 @@ export default function CustomerCabinet() {
             <h1 className="text-3xl md:text-5xl font-bold mb-2">
               <span className="gradient-text">Личный кабинет</span>
             </h1>
-            <p className="text-white/60 mb-8">Просмотр истории и статуса ваших заказов</p>
+            <p className="text-ink-muted mb-8">Просмотр истории и статуса ваших заказов</p>
           </motion.div>
 
           {!searched || orders.length === 0 ? (
@@ -121,7 +121,7 @@ export default function CustomerCabinet() {
               </form>
 
               {searched && orders.length === 0 && (
-                <div className="mt-6 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-200 text-sm text-center">
+                <div className="mt-6 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-600 dark:text-yellow-300 text-sm text-center">
                   Заказов по этому номеру не найдено.{' '}
                   <Link href="/#order" className="underline">Сделать первый заказ</Link>
                 </div>
@@ -130,20 +130,20 @@ export default function CustomerCabinet() {
           ) : (
             <>
               <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-                <div className="text-sm text-white/60">
+                <div className="text-sm text-ink-muted">
                   Найдено заказов: <strong className="text-white">{orders.length}</strong>
                   {' · '}{phone}
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => fetchOrders(phone)}
-                    className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm flex items-center gap-1"
+                    className="px-3 py-2 rounded-lg bg-surface-elevated border border-border hover:bg-surface-elevated transition text-sm flex items-center gap-1"
                   >
                     <RefreshCcw className="w-3.5 h-3.5" /> Обновить
                   </button>
                   <button
                     onClick={logout}
-                    className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-red-500/10 hover:text-red-300 transition text-sm"
+                    className="px-3 py-2 rounded-lg bg-surface-elevated border border-border hover:bg-pink-500/10 hover:text-pink-500 transition text-sm"
                   >
                     Выйти
                   </button>
@@ -167,55 +167,55 @@ export default function CustomerCabinet() {
                           <div className={cn('px-3 py-1 rounded-full text-xs border', status.color)}>
                             {status.text}
                           </div>
-                          <div className="text-sm text-white/40">{formatDate(order.createdAt)}</div>
+                          <div className="text-sm text-ink-subtle">{formatDate(order.createdAt)}</div>
                         </div>
 
                         <div className="grid md:grid-cols-2 gap-3 mb-4 text-sm">
                           <div className="flex items-start gap-2">
-                            <MapPin className="w-4 h-4 text-green-400 mt-0.5" />
+                            <MapPin className="w-4 h-4 text-mint-500 mt-0.5" />
                             <div>
-                              <div className="text-white/40 text-xs">Откуда</div>
+                              <div className="text-ink-subtle text-xs">Откуда</div>
                               <div>{order.fromCity}, {order.fromAddress}</div>
                             </div>
                           </div>
                           <div className="flex items-start gap-2">
-                            <MapPin className="w-4 h-4 text-red-400 mt-0.5" />
+                            <MapPin className="w-4 h-4 text-pink-500 mt-0.5" />
                             <div>
-                              <div className="text-white/40 text-xs">Куда</div>
+                              <div className="text-ink-subtle text-xs">Куда</div>
                               <div>{order.toCity}, {order.toAddress}</div>
                             </div>
                           </div>
                           <div className="flex items-start gap-2">
-                            <Calendar className="w-4 h-4 text-primary-400 mt-0.5" />
+                            <Calendar className="w-4 h-4 text-primary-500 mt-0.5" />
                             <div>
-                              <div className="text-white/40 text-xs">Время</div>
+                              <div className="text-ink-subtle text-xs">Время</div>
                               <div>{formatDate(order.scheduledAt)}</div>
                             </div>
                           </div>
                           <div className="flex items-start gap-2">
-                            <Car className="w-4 h-4 text-primary-400 mt-0.5" />
+                            <Car className="w-4 h-4 text-primary-500 mt-0.5" />
                             <div>
-                              <div className="text-white/40 text-xs">Класс</div>
+                              <div className="text-ink-subtle text-xs">Класс</div>
                               <div className="capitalize">{order.carClass}</div>
                             </div>
                           </div>
                         </div>
 
                         {order.driverName && (
-                          <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 mb-3 text-sm">
-                            <div className="font-semibold text-blue-300 mb-1">Ваш водитель</div>
+                          <div className="p-3 rounded-lg bg-accent-500/10 border border-accent-500/30 mb-3 text-sm">
+                            <div className="font-semibold text-accent-600 dark:text-accent-300 mb-1">Ваш водитель</div>
                             <div>{order.driverName} · {order.driverPhone}</div>
                             {order.carModel && (
-                              <div className="text-white/60 text-xs mt-1">
+                              <div className="text-ink-muted text-xs mt-1">
                                 {order.carModel} · {order.carNumber}
                               </div>
                             )}
                           </div>
                         )}
 
-                        <div className="flex items-center justify-between pt-3 border-t border-white/10 flex-wrap gap-3">
+                        <div className="flex items-center justify-between pt-3 border-t border-border flex-wrap gap-3">
                           <div>
-                            <div className="text-xs text-white/40">Стоимость</div>
+                            <div className="text-xs text-ink-subtle">Стоимость</div>
                             <div className="text-2xl font-bold gradient-text">
                               {formatPrice(order.finalPrice ?? order.estimatedPrice)}
                             </div>
@@ -224,21 +224,21 @@ export default function CustomerCabinet() {
                             {['pending', 'accepted'].includes(order.status) && (
                               <button
                                 onClick={() => cancelOrder(order)}
-                                className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 hover:bg-red-500/20 transition text-sm flex items-center gap-1"
+                                className="px-3 py-2 rounded-lg bg-pink-500/10 border border-pink-500/30 text-pink-600 dark:text-pink-400 hover:bg-pink-500/20 transition text-sm flex items-center gap-1"
                               >
                                 <X className="w-3.5 h-3.5" /> Отменить
                               </button>
                             )}
                             <Link
                               href={`/#order`}
-                              className="px-3 py-2 rounded-lg bg-primary-500/20 border border-primary-500/40 text-primary-300 hover:bg-primary-500/30 transition text-sm flex items-center gap-1"
+                              className="px-3 py-2 rounded-lg bg-primary-500/20 border border-primary-500/40 text-primary-600 dark:text-primary-300 hover:bg-primary-500/30 transition text-sm flex items-center gap-1"
                             >
                               <Repeat className="w-3.5 h-3.5" /> Повторить
                             </Link>
                           </div>
                         </div>
 
-                        <div className="text-xs text-white/40 mt-3 font-mono">ID: {order.id}</div>
+                        <div className="text-xs text-ink-subtle mt-3 font-mono">ID: {order.id}</div>
                       </motion.div>
                     );
                   })}

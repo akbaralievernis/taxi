@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Phone, Car, Moon, Sun, User } from 'lucide-react';
+import { Menu, X, Phone, Sparkles, Moon, Sun, User, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useLocale } from '@/lib/LocaleContext';
 import { useTheme } from '@/lib/ThemeContext';
@@ -19,7 +19,7 @@ export default function Header() {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
-    window.addEventListener('scroll', onScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -34,143 +34,190 @@ export default function Header() {
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
         scrolled
-          ? 'bg-dark-900/80 backdrop-blur-xl border-b border-white/10 py-3'
-          : 'bg-transparent py-5'
+          ? 'py-2'
+          : 'py-4'
       )}
     >
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2 group">
-          <motion.div
-            whileHover={{ rotate: 15 }}
-            className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center glow"
-          >
-            <Car className="w-6 h-6 text-white" />
-          </motion.div>
-          <div>
-            <div className="text-xl font-bold gradient-text">Taxi KG</div>
-            <div className="text-[10px] text-white/50 -mt-1">Бишкек • Ош • 24/7</div>
-          </div>
-        </a>
-
-        <nav className="hidden lg:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-white/70 hover:text-white transition-colors relative group"
+      <div className={cn(
+        'container mx-auto px-4',
+        scrolled && 'max-w-5xl'
+      )}>
+        <div className={cn(
+          'flex items-center justify-between rounded-2xl transition-all duration-500 px-4 py-2',
+          scrolled
+            ? 'glass-card-strong shadow-glow-sm'
+            : 'glass-card border-transparent'
+        )}>
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+            <motion.div
+              whileHover={{ rotate: -10, scale: 1.05 }}
+              className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 via-purple-500 to-accent-500 flex items-center justify-center shadow-glow-sm"
             >
-              {link.label}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-500 transition-all group-hover:w-full" />
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 transition"
-            aria-label="Сменить тему"
-            title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
-          >
-            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
-
-          <Link
-            href="/cabinet"
-            className="hidden md:flex p-2 rounded-lg bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 transition"
-            title="Личный кабинет"
-          >
-            <User className="w-4 h-4" />
+              <Sparkles className="w-5 h-5 text-white" />
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary-400 to-accent-400 opacity-0 group-hover:opacity-100 blur-md transition-opacity" />
+            </motion.div>
+            <div>
+              <div className="text-lg font-bold gradient-text leading-none">Taxi KG</div>
+              <div className="text-[10px] text-ink-subtle -mt-0.5">Бишкек • Ош • 24/7</div>
+            </div>
           </Link>
 
-          <div className="relative">
-            <button
-              onClick={() => setLocaleOpen(!localeOpen)}
-              className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white/80 text-sm font-semibold hover:bg-white/10 transition"
+          {/* Desktop nav */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="px-4 py-2 text-sm font-medium text-ink-muted hover:text-ink rounded-lg hover:bg-surface-elevated transition-all relative group"
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+
+          {/* Actions */}
+          <div className="flex items-center gap-1.5">
+            {/* Theme toggle */}
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              onClick={toggleTheme}
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-ink-muted hover:text-ink hover:bg-surface-elevated transition-all"
+              aria-label="Сменить тему"
+              title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
             >
-              {localeFlags[locale]}
-            </button>
-            <AnimatePresence>
-              {localeOpen && (
+              <AnimatePresence mode="wait">
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute right-0 mt-2 w-40 glass-card overflow-hidden"
+                  key={theme}
+                  initial={{ rotate: -180, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 180, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  {locales.map((l) => (
-                    <button
-                      key={l}
-                      onClick={() => {
-                        setLocale(l as Locale);
-                        setLocaleOpen(false);
-                      }}
-                      className={cn(
-                        'w-full text-left px-4 py-2 text-sm transition hover:bg-white/10',
-                        locale === l ? 'text-primary-400' : 'text-white/80'
-                      )}
-                    >
-                      <span className="font-semibold mr-2">{localeFlags[l as Locale]}</span>
-                      {localeNames[l as Locale]}
-                    </button>
-                  ))}
+                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                 </motion.div>
-              )}
-            </AnimatePresence>
+              </AnimatePresence>
+            </motion.button>
+
+            {/* Language */}
+            <div className="relative">
+              <button
+                onClick={() => setLocaleOpen(!localeOpen)}
+                className="h-9 px-3 rounded-lg flex items-center gap-1.5 text-sm font-semibold text-ink-muted hover:text-ink hover:bg-surface-elevated transition-all"
+              >
+                {localeFlags[locale]}
+                <ChevronDown className={cn('w-3.5 h-3.5 transition', localeOpen && 'rotate-180')} />
+              </button>
+              <AnimatePresence>
+                {localeOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setLocaleOpen(false)} />
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 mt-2 w-44 glass-card-strong p-1 overflow-hidden z-50"
+                    >
+                      {locales.map((l) => (
+                        <button
+                          key={l}
+                          onClick={() => {
+                            setLocale(l as Locale);
+                            setLocaleOpen(false);
+                          }}
+                          className={cn(
+                            'w-full text-left px-3 py-2 text-sm rounded-lg transition flex items-center gap-2',
+                            locale === l
+                              ? 'bg-primary-500/10 text-primary-600 dark:text-primary-300'
+                              : 'text-ink-muted hover:bg-surface-elevated hover:text-ink'
+                          )}
+                        >
+                          <span className="font-bold text-xs w-6">{localeFlags[l as Locale]}</span>
+                          {localeNames[l as Locale]}
+                        </button>
+                      ))}
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Cabinet */}
+            <Link
+              href="/cabinet"
+              className="hidden sm:flex w-9 h-9 rounded-lg items-center justify-center text-ink-muted hover:text-ink hover:bg-surface-elevated transition-all"
+              title="Личный кабинет"
+            >
+              <User className="w-4 h-4" />
+            </Link>
+
+            {/* Phone */}
+            <a
+              href="tel:+996555000000"
+              className="hidden md:flex items-center gap-1.5 h-9 px-3 rounded-lg text-ink-muted hover:text-ink hover:bg-surface-elevated transition-all text-sm"
+            >
+              <Phone className="w-3.5 h-3.5" />
+              <span className="hidden xl:inline">+996 555 000 000</span>
+            </a>
+
+            {/* CTA */}
+            <a href="#order" className="hidden sm:inline-flex btn-primary !py-2 !px-4 text-sm">
+              {t.nav.order}
+            </a>
+
+            {/* Mobile menu button */}
+            <button
+              className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center text-ink hover:bg-surface-elevated"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="menu"
+            >
+              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
-
-          <a
-            href="tel:+996555000000"
-            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 transition"
-          >
-            <Phone className="w-4 h-4" />
-            <span className="text-sm">+996 555 000 000</span>
-          </a>
-
-          <a href="#order" className="btn-primary text-sm hidden sm:inline-block">
-            {t.nav.order}
-          </a>
-
-          <button
-            className="lg:hidden p-2 text-white"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="menu"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
         </div>
       </div>
 
+      {/* Mobile menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-dark-900/95 backdrop-blur-xl border-t border-white/10"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="lg:hidden container mx-auto px-4 mt-2"
           >
-            <div className="container mx-auto px-4 py-4 flex flex-col gap-3">
+            <div className="glass-card-strong p-3 space-y-1">
               {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="py-2 text-white/80 hover:text-primary-400 transition"
+                  className="block px-4 py-3 text-ink-muted hover:text-ink hover:bg-surface-elevated rounded-lg transition"
                 >
                   {link.label}
                 </a>
               ))}
-              <a
-                href="#order"
-                onClick={() => setIsOpen(false)}
-                className="btn-primary text-center mt-2"
-              >
-                {t.nav.order}
-              </a>
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                <Link
+                  href="/cabinet"
+                  className="btn-secondary !py-2 text-sm text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Кабинет
+                </Link>
+                <a
+                  href="#order"
+                  onClick={() => setIsOpen(false)}
+                  className="btn-primary !py-2 text-sm text-center"
+                >
+                  {t.nav.order}
+                </a>
+              </div>
             </div>
           </motion.div>
         )}

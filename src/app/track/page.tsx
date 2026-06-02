@@ -51,7 +51,7 @@ export default function TrackPage() {
 
       <section className="pt-32 pb-20">
         <div className="container mx-auto px-4 max-w-2xl">
-          <Link href="/" className="inline-flex items-center gap-2 text-white/60 hover:text-primary-400 mb-6 transition">
+          <Link href="/" className="inline-flex items-center gap-2 text-ink-muted hover:text-primary-500 mb-6 transition">
             <ArrowLeft className="w-4 h-4" /> На главную
           </Link>
 
@@ -59,7 +59,7 @@ export default function TrackPage() {
             <h1 className="text-3xl md:text-5xl font-bold mb-2">
               <span className="gradient-text">Отслеживание заказа</span>
             </h1>
-            <p className="text-white/60 mb-8">Проверьте статус вашей поездки</p>
+            <p className="text-ink-muted mb-8">Проверьте статус вашей поездки</p>
           </motion.div>
 
           <motion.form
@@ -121,7 +121,7 @@ export default function TrackPage() {
               {order.status !== 'cancelled' && (
                 <div className="mb-8">
                   <div className="relative">
-                    <div className="absolute top-4 left-4 right-4 h-0.5 bg-white/10" />
+                    <div className="absolute top-4 left-4 right-4 h-0.5 bg-surface-elevated" />
                     <div
                       className="absolute top-4 left-4 h-0.5 bg-gradient-to-r from-primary-500 to-primary-400 transition-all duration-700"
                       style={{
@@ -134,14 +134,14 @@ export default function TrackPage() {
                           <div className={cn(
                             'w-8 h-8 mx-auto rounded-full flex items-center justify-center text-xs font-bold mb-2 transition-all',
                             i <= currentStepIdx
-                              ? 'bg-primary-500 text-dark-900 shadow-lg shadow-primary-500/40'
-                              : 'bg-white/10 text-white/40'
+                              ? 'bg-gradient-to-br from-primary-500 to-purple-500 text-white shadow-lg shadow-primary-500/40'
+                              : 'bg-surface-elevated text-ink-subtle'
                           )}>
                             {i + 1}
                           </div>
                           <div className={cn(
                             'text-xs',
-                            i <= currentStepIdx ? 'text-white' : 'text-white/40'
+                            i <= currentStepIdx ? 'text-ink' : 'text-ink-subtle'
                           )}>
                             {step.label}
                           </div>
@@ -154,58 +154,58 @@ export default function TrackPage() {
 
               <div className="space-y-3 text-sm">
                 <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-green-400 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-mint-500 mt-0.5" />
                   <div>
-                    <div className="text-white/40 text-xs">Откуда</div>
+                    <div className="text-ink-subtle text-xs">Откуда</div>
                     <div>{order.fromCity}, {order.fromAddress}</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-red-400 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-pink-500 mt-0.5" />
                   <div>
-                    <div className="text-white/40 text-xs">Куда</div>
+                    <div className="text-ink-subtle text-xs">Куда</div>
                     <div>{order.toCity}, {order.toAddress}</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <Calendar className="w-4 h-4 text-primary-400 mt-0.5" />
+                  <Calendar className="w-4 h-4 text-primary-500 mt-0.5" />
                   <div>
-                    <div className="text-white/40 text-xs">Время</div>
+                    <div className="text-ink-subtle text-xs">Время</div>
                     <div>{formatDate(order.scheduledAt)}</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <Car className="w-4 h-4 text-primary-400 mt-0.5" />
+                  <Car className="w-4 h-4 text-primary-500 mt-0.5" />
                   <div>
-                    <div className="text-white/40 text-xs">Класс / Пассажиров</div>
+                    <div className="text-ink-subtle text-xs">Класс / Пассажиров</div>
                     <div className="capitalize">{order.carClass} · {order.passengers} чел.</div>
                   </div>
                 </div>
               </div>
 
               {order.driverName && (
-                <div className="mt-6 p-4 rounded-xl bg-blue-500/10 border border-blue-500/30">
-                  <div className="font-semibold text-blue-300 mb-2">Ваш водитель</div>
+                <div className="mt-6 p-4 rounded-xl bg-accent-500/10 border border-accent-500/30">
+                  <div className="font-semibold text-accent-600 dark:text-accent-300 mb-2">Ваш водитель</div>
                   <div className="space-y-1 text-sm">
                     <div>{order.driverName}</div>
-                    <a href={`tel:${order.driverPhone}`} className="text-blue-300 hover:underline flex items-center gap-1">
+                    <a href={`tel:${order.driverPhone}`} className="text-accent-600 dark:text-accent-300 hover:underline flex items-center gap-1">
                       <Phone className="w-3.5 h-3.5" /> {order.driverPhone}
                     </a>
                     {order.carModel && (
-                      <div className="text-white/60">{order.carModel} · {order.carNumber}</div>
+                      <div className="text-ink-muted">{order.carModel} · {order.carNumber}</div>
                     )}
                   </div>
                 </div>
               )}
 
-              <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
+              <div className="mt-6 pt-6 border-t border-border flex items-center justify-between">
                 <div>
-                  <div className="text-xs text-white/40">Стоимость</div>
+                  <div className="text-xs text-ink-subtle">Стоимость</div>
                   <div className="text-3xl font-bold gradient-text">
                     {formatPrice(order.finalPrice ?? order.estimatedPrice)}
                   </div>
                 </div>
-                <Link href="/cabinet" className="text-sm text-primary-400 hover:underline">
+                <Link href="/cabinet" className="text-sm text-primary-500 hover:underline">
                   Все мои заказы →
                 </Link>
               </div>

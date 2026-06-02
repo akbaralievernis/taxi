@@ -36,7 +36,6 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900" />
       <div className="absolute inset-0 grid-pattern opacity-30" />
 
       <motion.div
@@ -55,12 +54,12 @@ export default function AdminLoginPage() {
             <motion.div
               animate={{ rotate: [0, 5, -5, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center glow"
+              className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary-500 via-purple-500 to-accent-500 flex items-center justify-center glow"
             >
               <Car className="w-8 h-8 text-white" />
             </motion.div>
             <h1 className="text-2xl font-bold gradient-text mb-1">Админ-панель</h1>
-            <p className="text-white/60 text-sm">Войдите для управления сайтом</p>
+            <p className="text-ink-muted text-sm">Войдите для управления сайтом</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -110,13 +109,13 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 text-sm text-blue-300">
+          <div className="mt-6 p-3 rounded-lg bg-accent-500/10 border border-accent-500/30 text-sm text-accent-600 dark:text-accent-300">
             <strong>Демо-доступ:</strong><br />
-            Логин: <code className="px-1 rounded bg-white/10">admin</code><br />
-            Пароль: <code className="px-1 rounded bg-white/10">admin123</code>
+            Логин: <code className="px-1 rounded bg-surface-elevated">admin</code><br />
+            Пароль: <code className="px-1 rounded bg-surface-elevated">admin123</code>
           </div>
 
-          <a href="/" className="block text-center mt-4 text-sm text-white/60 hover:text-primary-400 transition">
+          <a href="/" className="block text-center mt-4 text-sm text-ink-muted hover:text-primary-500 transition">
             ← На главную
           </a>
         </div>

@@ -54,7 +54,7 @@ export default function TariffsPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-primary-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
       </div>
     );
   }
@@ -65,7 +65,7 @@ export default function TariffsPage() {
         <h1 className="text-3xl md:text-4xl font-bold mb-2">
           <span className="gradient-text">Тарифы</span>
         </h1>
-        <p className="text-white/60">Управление ценами на услуги</p>
+        <p className="text-ink-muted">Управление ценами на услуги</p>
       </div>
 
       <div className="space-y-4">
@@ -79,11 +79,11 @@ export default function TariffsPage() {
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl bg-primary-500/20 flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-primary-400" />
+                <DollarSign className="w-6 h-6 text-primary-500" />
               </div>
               <div>
                 <h2 className="text-xl font-bold">{tariff.name}</h2>
-                <p className="text-sm text-white/60">{tariff.description}</p>
+                <p className="text-sm text-ink-muted">{tariff.description}</p>
               </div>
             </div>
 

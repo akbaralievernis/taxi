@@ -48,7 +48,7 @@ export default function DashboardPage() {
       value: stats.totalOrders,
       icon: ClipboardList,
       color: 'from-blue-500/20 to-cyan-500/10',
-      iconColor: 'text-blue-400',
+      iconColor: 'text-accent-500',
     },
     {
       label: 'Ожидают',
@@ -62,14 +62,14 @@ export default function DashboardPage() {
       value: stats.completedOrders,
       icon: CheckCircle2,
       color: 'from-green-500/20 to-emerald-500/10',
-      iconColor: 'text-green-400',
+      iconColor: 'text-mint-500',
     },
     {
       label: 'Отменено',
       value: stats.cancelledOrders,
       icon: XCircle,
       color: 'from-red-500/20 to-pink-500/10',
-      iconColor: 'text-red-400',
+      iconColor: 'text-pink-500',
     },
   ];
 
@@ -82,7 +82,7 @@ export default function DashboardPage() {
         <h1 className="text-3xl md:text-4xl font-bold mb-2">
           <span className="gradient-text">Дашборд</span>
         </h1>
-        <p className="text-white/60">Обзор работы такси-сервиса</p>
+        <p className="text-ink-muted">Обзор работы такси-сервиса</p>
       </motion.div>
 
       {/* Stat cards */}
@@ -98,7 +98,7 @@ export default function DashboardPage() {
           >
             <card.icon className={`w-8 h-8 ${card.iconColor} mb-3`} />
             <div className="text-3xl font-bold">{card.value}</div>
-            <div className="text-sm text-white/60 mt-1">{card.label}</div>
+            <div className="text-sm text-ink-muted mt-1">{card.label}</div>
           </motion.div>
         ))}
       </div>
@@ -111,13 +111,13 @@ export default function DashboardPage() {
           className="glass-card p-6 bg-gradient-to-br from-primary-500/20 to-primary-600/10 border-primary-500/30"
         >
           <div className="flex items-start justify-between mb-3">
-            <DollarSign className="w-10 h-10 text-primary-400" />
-            <div className="flex items-center gap-1 text-green-400 text-sm">
+            <DollarSign className="w-10 h-10 text-primary-500" />
+            <div className="flex items-center gap-1 text-mint-500 text-sm">
               <TrendingUp className="w-4 h-4" />
               Доход
             </div>
           </div>
-          <div className="text-sm text-white/60 mb-1">Общий доход</div>
+          <div className="text-sm text-ink-muted mb-1">Общий доход</div>
           <div className="text-3xl md:text-4xl font-bold gradient-text">
             {formatPrice(stats.totalRevenue)}
           </div>
@@ -129,16 +129,16 @@ export default function DashboardPage() {
           className="glass-card p-6"
         >
           <div className="flex items-start justify-between mb-3">
-            <Sparkles className="w-10 h-10 text-primary-400" />
-            <div className="text-sm text-white/60">Сегодня</div>
+            <Sparkles className="w-10 h-10 text-primary-500" />
+            <div className="text-sm text-ink-muted">Сегодня</div>
           </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
-              <div className="text-sm text-white/60 mb-1">Заказов</div>
+              <div className="text-sm text-ink-muted mb-1">Заказов</div>
               <div className="text-2xl font-bold">{stats.todayOrders}</div>
             </div>
             <div>
-              <div className="text-sm text-white/60 mb-1">Доход</div>
+              <div className="text-sm text-ink-muted mb-1">Доход</div>
               <div className="text-2xl font-bold gradient-text">
                 {formatPrice(stats.todayRevenue)}
               </div>
@@ -155,21 +155,21 @@ export default function DashboardPage() {
           className="glass-card p-6"
         >
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-primary-400" />
+            <MapPin className="w-5 h-5 text-primary-500" />
             Топ маршрутов
           </h2>
           <div className="space-y-3">
             {stats.topRoutes.map((route, i) => (
-              <div key={i} className="flex items-center gap-4 p-3 rounded-lg bg-white/5">
-                <div className="w-8 h-8 rounded-lg bg-primary-500/20 flex items-center justify-center text-primary-400 font-bold">
+              <div key={i} className="flex items-center gap-4 p-3 rounded-lg bg-surface-elevated">
+                <div className="w-8 h-8 rounded-lg bg-primary-500/20 flex items-center justify-center text-primary-500 font-bold">
                   {i + 1}
                 </div>
                 <div className="flex-1 flex items-center gap-2">
                   <span>{route.from}</span>
-                  <span className="text-white/40">→</span>
+                  <span className="text-ink-subtle">→</span>
                   <span>{route.to}</span>
                 </div>
-                <div className="text-primary-400 font-semibold">{route.count} поездок</div>
+                <div className="text-primary-500 font-semibold">{route.count} поездок</div>
               </div>
             ))}
           </div>
@@ -183,19 +183,19 @@ export default function DashboardPage() {
         className="grid md:grid-cols-3 gap-4"
       >
         <Link href="/admin/dashboard/orders" className="glass-card p-5 hover:border-primary-500/50 transition-all hover:-translate-y-1 group">
-          <ClipboardList className="w-8 h-8 text-primary-400 mb-3 group-hover:scale-110 transition" />
+          <ClipboardList className="w-8 h-8 text-primary-500 mb-3 group-hover:scale-110 transition" />
           <div className="font-semibold">Управление заказами</div>
-          <div className="text-sm text-white/60">Просмотр и обработка</div>
+          <div className="text-sm text-ink-muted">Просмотр и обработка</div>
         </Link>
         <Link href="/admin/dashboard/drivers" className="glass-card p-5 hover:border-primary-500/50 transition-all hover:-translate-y-1 group">
-          <Sparkles className="w-8 h-8 text-primary-400 mb-3 group-hover:scale-110 transition" />
+          <Sparkles className="w-8 h-8 text-primary-500 mb-3 group-hover:scale-110 transition" />
           <div className="font-semibold">Водители</div>
-          <div className="text-sm text-white/60">Добавление и контроль</div>
+          <div className="text-sm text-ink-muted">Добавление и контроль</div>
         </Link>
         <Link href="/admin/dashboard/tariffs" className="glass-card p-5 hover:border-primary-500/50 transition-all hover:-translate-y-1 group">
-          <DollarSign className="w-8 h-8 text-primary-400 mb-3 group-hover:scale-110 transition" />
+          <DollarSign className="w-8 h-8 text-primary-500 mb-3 group-hover:scale-110 transition" />
           <div className="font-semibold">Тарифы</div>
-          <div className="text-sm text-white/60">Управление ценами</div>
+          <div className="text-sm text-ink-muted">Управление ценами</div>
         </Link>
       </motion.div>
     </div>
