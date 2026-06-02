@@ -1,10 +1,16 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { Order, Driver, Tariff, Route, Promo, Review, OrderStatus, CarClass } from '@/types';
+import { supabase } from './supabase';
+
+const useSupabase =
+  !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  process.env.NEXT_PUBLIC_SUPABASE_URL !== 'https://placeholder.supabase.co' &&
+  !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY !== 'placeholder';
 
 // На Vercel/serverless — read-only ФС, используем in-memory кеш.
 // Локально — JSON-файлы в src/data/.
-// Для продакшена с реальной БД замените на Vercel KV / Postgres / Supabase.
 const IS_SERVERLESS = process.env.VERCEL === '1' || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
 const DATA_DIR = path.join(process.cwd(), 'src', 'data');
@@ -18,7 +24,7 @@ const FILES = {
   reviews: path.join(DATA_DIR, 'reviews.json'),
 };
 
-// In-memory кеш для serverless (выживает в рамках одного контейнера)
+// In-memory кеш для serverless
 const memCache = new Map<string, any>();
 
 async function ensureDir() {
@@ -62,39 +68,89 @@ function generateId(prefix: string): string {
 // === ORDERS ===
 
 export async function getOrders(): Promise<Order[]> {
+  if (useSupabase) {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .order('createdAt', { ascending: false });
+    if (error) throw error;
+    return (data || []) as Order[];
+  }
   return readJson<Order[]>(FILES.orders, []);
 }
 
 export async function getOrderById(id: string): Promise<Order | null> {
+  if (useSupabase) {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) throw error;
+    return data as Order | null;
+  }
   const orders = await getOrders();
   return orders.find(o => o.id === id) ?? null;
 }
 
 export async function createOrder(input: Omit<Order, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<Order> {
-  const orders = await getOrders();
+  const id = generateId('ord');
   const now = new Date().toISOString();
   const order: Order = {
     ...input,
-    id: generateId('ord'),
+    id,
     createdAt: now,
     updatedAt: now,
     status: 'pending',
   };
+
+  if (useSupabase) {
+    const { error } = await supabase
+      .from('orders')
+      .insert(order);
+    if (error) throw error;
+    return order;
+  }
+
+  const orders = await getOrders();
   orders.unshift(order);
   await writeJson(FILES.orders, orders);
   return order;
 }
 
 export async function updateOrder(id: string, patch: Partial<Order>): Promise<Order | null> {
+  const updatedAt = new Date().toISOString();
+  const updateData = { ...patch, updatedAt };
+
+  if (useSupabase) {
+    const { data, error } = await supabase
+      .from('orders')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+    if (error) throw error;
+    return data as Order | null;
+  }
+
   const orders = await getOrders();
   const idx = orders.findIndex(o => o.id === id);
   if (idx === -1) return null;
-  orders[idx] = { ...orders[idx], ...patch, updatedAt: new Date().toISOString() };
+  orders[idx] = { ...orders[idx], ...updateData };
   await writeJson(FILES.orders, orders);
   return orders[idx];
 }
 
 export async function deleteOrder(id: string): Promise<boolean> {
+  if (useSupabase) {
+    const { error } = await supabase
+      .from('orders')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+    return true;
+  }
+
   const orders = await getOrders();
   const filtered = orders.filter(o => o.id !== id);
   if (filtered.length === orders.length) return false;
@@ -105,24 +161,54 @@ export async function deleteOrder(id: string): Promise<boolean> {
 // === DRIVERS ===
 
 export async function getDrivers(): Promise<Driver[]> {
+  if (useSupabase) {
+    const { data, error } = await supabase
+      .from('drivers')
+      .select('*')
+      .order('createdAt', { ascending: false });
+    if (error) throw error;
+    return (data || []) as Driver[];
+  }
   return readJson<Driver[]>(FILES.drivers, getDefaultDrivers());
 }
 
 export async function createDriver(input: Omit<Driver, 'id' | 'createdAt' | 'rating' | 'totalTrips'>): Promise<Driver> {
-  const drivers = await getDrivers();
+  const id = generateId('drv');
+  const now = new Date().toISOString();
   const driver: Driver = {
     ...input,
-    id: generateId('drv'),
-    createdAt: new Date().toISOString(),
+    id,
+    createdAt: now,
     rating: 5.0,
     totalTrips: 0,
   };
+
+  if (useSupabase) {
+    const { error } = await supabase
+      .from('drivers')
+      .insert(driver);
+    if (error) throw error;
+    return driver;
+  }
+
+  const drivers = await getDrivers();
   drivers.push(driver);
   await writeJson(FILES.drivers, drivers);
   return driver;
 }
 
 export async function updateDriver(id: string, patch: Partial<Driver>): Promise<Driver | null> {
+  if (useSupabase) {
+    const { data, error } = await supabase
+      .from('drivers')
+      .update(patch)
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+    if (error) throw error;
+    return data as Driver | null;
+  }
+
   const drivers = await getDrivers();
   const idx = drivers.findIndex(d => d.id === id);
   if (idx === -1) return null;
@@ -132,6 +218,15 @@ export async function updateDriver(id: string, patch: Partial<Driver>): Promise<
 }
 
 export async function deleteDriver(id: string): Promise<boolean> {
+  if (useSupabase) {
+    const { error } = await supabase
+      .from('drivers')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+    return true;
+  }
+
   const drivers = await getDrivers();
   const filtered = drivers.filter(d => d.id !== id);
   if (filtered.length === drivers.length) return false;
@@ -142,10 +237,29 @@ export async function deleteDriver(id: string): Promise<boolean> {
 // === TARIFFS ===
 
 export async function getTariffs(): Promise<Tariff[]> {
+  if (useSupabase) {
+    const { data, error } = await supabase
+      .from('tariffs')
+      .select('*')
+      .order('basePrice', { ascending: true });
+    if (error) throw error;
+    return (data || []) as Tariff[];
+  }
   return readJson<Tariff[]>(FILES.tariffs, getDefaultTariffs());
 }
 
 export async function updateTariff(id: string, patch: Partial<Tariff>): Promise<Tariff | null> {
+  if (useSupabase) {
+    const { data, error } = await supabase
+      .from('tariffs')
+      .update(patch)
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+    if (error) throw error;
+    return data as Tariff | null;
+  }
+
   const tariffs = await getTariffs();
   const idx = tariffs.findIndex(t => t.id === id);
   if (idx === -1) return null;
@@ -157,10 +271,27 @@ export async function updateTariff(id: string, patch: Partial<Tariff>): Promise<
 // === ROUTES ===
 
 export async function getRoutes(): Promise<Route[]> {
+  if (useSupabase) {
+    const { data, error } = await supabase
+      .from('routes')
+      .select('*');
+    if (error) throw error;
+    return (data || []) as Route[];
+  }
   return readJson<Route[]>(FILES.routes, getDefaultRoutes());
 }
 
 export async function findRoute(fromCity: string, toCity: string): Promise<Route | null> {
+  if (useSupabase) {
+    const { data, error } = await supabase
+      .from('routes')
+      .select('*')
+      .ilike('fromCity', fromCity)
+      .ilike('toCity', toCity)
+      .maybeSingle();
+    if (error) throw error;
+    return data as Route | null;
+  }
   const routes = await getRoutes();
   return routes.find(r =>
     r.fromCity.toLowerCase() === fromCity.toLowerCase() &&
@@ -171,10 +302,32 @@ export async function findRoute(fromCity: string, toCity: string): Promise<Route
 // === PROMOS ===
 
 export async function getPromos(): Promise<Promo[]> {
+  if (useSupabase) {
+    const { data, error } = await supabase
+      .from('promos')
+      .select('*');
+    if (error) throw error;
+    return (data || []) as Promo[];
+  }
   return readJson<Promo[]>(FILES.promos, []);
 }
 
 export async function findPromoByCode(code: string): Promise<Promo | null> {
+  if (useSupabase) {
+    const now = new Date().toISOString();
+    const { data, error } = await supabase
+      .from('promos')
+      .select('*')
+      .ilike('code', code)
+      .eq('isActive', true)
+      .gt('validUntil', now)
+      .maybeSingle();
+    if (error) throw error;
+    if (data && data.usedCount < data.maxUses) {
+      return data as Promo;
+    }
+    return null;
+  }
   const promos = await getPromos();
   return promos.find(p =>
     p.code.toLowerCase() === code.toLowerCase() &&
@@ -187,24 +340,55 @@ export async function findPromoByCode(code: string): Promise<Promo | null> {
 // === REVIEWS ===
 
 export async function getReviews(publishedOnly = false): Promise<Review[]> {
+  if (useSupabase) {
+    let query = supabase.from('reviews').select('*').order('createdAt', { ascending: false });
+    if (publishedOnly) {
+      query = query.eq('isPublished', true);
+    }
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data || []) as Review[];
+  }
   const reviews = await readJson<Review[]>(FILES.reviews, getDefaultReviews());
   return publishedOnly ? reviews.filter(r => r.isPublished) : reviews;
 }
 
 export async function createReview(input: Omit<Review, 'id' | 'createdAt' | 'isPublished'>): Promise<Review> {
-  const reviews = await getReviews();
+  const id = `rev_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+  const now = new Date().toISOString();
   const review: Review = {
     ...input,
-    id: `rev_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-    createdAt: new Date().toISOString(),
-    isPublished: false, // модерация
+    id,
+    createdAt: now,
+    isPublished: false,
   };
+
+  if (useSupabase) {
+    const { error } = await supabase
+      .from('reviews')
+      .insert(review);
+    if (error) throw error;
+    return review;
+  }
+
+  const reviews = await getReviews();
   reviews.unshift(review);
   await writeJson(FILES.reviews, reviews);
   return review;
 }
 
 export async function updateReview(id: string, patch: Partial<Review>): Promise<Review | null> {
+  if (useSupabase) {
+    const { data, error } = await supabase
+      .from('reviews')
+      .update(patch)
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+    if (error) throw error;
+    return data as Review | null;
+  }
+
   const reviews = await getReviews();
   const idx = reviews.findIndex(r => r.id === id);
   if (idx === -1) return null;
@@ -214,52 +398,20 @@ export async function updateReview(id: string, patch: Partial<Review>): Promise<
 }
 
 export async function deleteReview(id: string): Promise<boolean> {
+  if (useSupabase) {
+    const { error } = await supabase
+      .from('reviews')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+    return true;
+  }
+
   const reviews = await getReviews();
   const filtered = reviews.filter(r => r.id !== id);
   if (filtered.length === reviews.length) return false;
   await writeJson(FILES.reviews, filtered);
   return true;
-}
-
-function getDefaultReviews(): Review[] {
-  return [
-    {
-      id: 'rev_default_1',
-      createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
-      customerName: 'Айдар Калыев',
-      rating: 5,
-      text: 'Заказывал такси Бишкек-Ош. Приехали вовремя, водитель адекватный, машина чистая. Цена — как и обещали, никаких накруток. Рекомендую!',
-      city: 'Бишкек',
-      isPublished: true,
-    },
-    {
-      id: 'rev_default_2',
-      createdAt: new Date(Date.now() - 86400000 * 7).toISOString(),
-      customerName: 'Нурбек Жумабаев',
-      rating: 5,
-      text: 'Пользуюсь регулярно для поездок по городу. Очень удобное приложение, форма понятная, цены справедливые. Спасибо за сервис!',
-      city: 'Ош',
-      isPublished: true,
-    },
-    {
-      id: 'rev_default_3',
-      createdAt: new Date(Date.now() - 86400000 * 14).toISOString(),
-      customerName: 'Гульнара Асанова',
-      rating: 4,
-      text: 'Заказывала минивэн для поездки с семьёй в Каракол. Всё прошло хорошо, водитель помог с багажом, дети остались довольны.',
-      city: 'Бишкек',
-      isPublished: true,
-    },
-    {
-      id: 'rev_default_4',
-      createdAt: new Date(Date.now() - 86400000 * 20).toISOString(),
-      customerName: 'Эрлан Бакиев',
-      rating: 5,
-      text: 'Лучшее такси в Кыргызстане! Быстрая подача в Бишкеке, всегда чистые машины. Промокод на скидку очень порадовал.',
-      city: 'Бишкек',
-      isPublished: true,
-    },
-  ];
 }
 
 // === STATS ===
@@ -489,6 +641,47 @@ function getDefaultDrivers(): Driver[] {
   ];
 }
 
+function getDefaultReviews(): Review[] {
+  return [
+    {
+      id: 'rev_default_1',
+      createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
+      customerName: 'Айдар Калыев',
+      rating: 5,
+      text: 'Заказывал такси Бишкек-Ош. Приехали вовремя, водитель адекватный, машина чистая. Цена — как и обещали, никаких накруток. Рекомендую!',
+      city: 'Бишкек',
+      isPublished: true,
+    },
+    {
+      id: 'rev_default_2',
+      createdAt: new Date(Date.now() - 86400000 * 7).toISOString(),
+      customerName: 'Нурбек Жумабаев',
+      rating: 5,
+      text: 'Пользуюсь регулярно для поездок по городу. Очень удобное приложение, форма понятная, цены справедливые. Спасибо за сервис!',
+      city: 'Ош',
+      isPublished: true,
+    },
+    {
+      id: 'rev_default_3',
+      createdAt: new Date(Date.now() - 86400000 * 14).toISOString(),
+      customerName: 'Гульнара Асанова',
+      rating: 4,
+      text: 'Заказывала минивэн для поездки с ещё одной семьёй в Каракол. Всё прошло хорошо, водитель помог с багажом, дети остались довольны.',
+      city: 'Бишкек',
+      isPublished: true,
+    },
+    {
+      id: 'rev_default_4',
+      createdAt: new Date(Date.now() - 86400000 * 20).toISOString(),
+      customerName: 'Эрлан Бакиев',
+      rating: 5,
+      text: 'Лучшее такси в Кыргызстане! Быстрая подача в Бишкеке, всегда чистые машины. Промокод на скидку очень порадовал.',
+      city: 'Бишкек',
+      isPublished: true,
+    },
+  ];
+}
+
 // === PRICE CALCULATION ===
 
 export async function calculatePrice(params: {
@@ -513,7 +706,6 @@ export async function calculatePrice(params: {
       }
       return { price, isIntercity: true, distanceKm: route.distanceKm };
     }
-    // если маршрут не найден — считаем по расстоянию
     const distance = params.distanceKm ?? 100;
     let price = tariff.basePrice + distance * tariff.intercityPricePerKm;
     if (params.scheduledAt && isNightTime(params.scheduledAt)) {
@@ -522,7 +714,6 @@ export async function calculatePrice(params: {
     return { price: Math.round(price), isIntercity: true, distanceKm: distance };
   }
 
-  // внутри города
   const distance = params.distanceKm ?? 8;
   let price = tariff.basePrice + distance * tariff.pricePerKm;
   if (params.scheduledAt && isNightTime(params.scheduledAt)) {
