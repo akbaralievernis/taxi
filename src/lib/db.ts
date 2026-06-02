@@ -2,6 +2,11 @@ import fs from 'fs/promises';
 import path from 'path';
 import { Order, Driver, Tariff, Route, Promo, Review, OrderStatus, CarClass } from '@/types';
 
+// На Vercel/serverless — read-only ФС, используем in-memory кеш.
+// Локально — JSON-файлы в src/data/.
+// Для продакшена с реальной БД замените на Vercel KV / Postgres / Supabase.
+const IS_SERVERLESS = process.env.VERCEL === '1' || process.env.AWS_LAMBDA_FUNCTION_NAME;
+
 const DATA_DIR = path.join(process.cwd(), 'src', 'data');
 
 const FILES = {
@@ -13,13 +18,24 @@ const FILES = {
   reviews: path.join(DATA_DIR, 'reviews.json'),
 };
 
+// In-memory кеш для serverless (выживает в рамках одного контейнера)
+const memCache = new Map<string, any>();
+
 async function ensureDir() {
+  if (IS_SERVERLESS) return;
   try {
     await fs.mkdir(DATA_DIR, { recursive: true });
   } catch {}
 }
 
 async function readJson<T>(file: string, fallback: T): Promise<T> {
+  if (IS_SERVERLESS) {
+    if (!memCache.has(file)) {
+      memCache.set(file, fallback);
+    }
+    return memCache.get(file) as T;
+  }
+
   await ensureDir();
   try {
     const data = await fs.readFile(file, 'utf-8');
@@ -31,6 +47,10 @@ async function readJson<T>(file: string, fallback: T): Promise<T> {
 }
 
 async function writeJson<T>(file: string, data: T): Promise<void> {
+  if (IS_SERVERLESS) {
+    memCache.set(file, data);
+    return;
+  }
   await ensureDir();
   await fs.writeFile(file, JSON.stringify(data, null, 2), 'utf-8');
 }
