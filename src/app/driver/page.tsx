@@ -1,0 +1,109 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Phone, LogIn, Loader2, Car } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+export default function DriverLogin() {
+  const router = useRouter();
+  const [phone, setPhone] = useState('+996 ');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch('/api/driver/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      if (res.ok) {
+        toast.success('Добро пожаловать!');
+        router.push('/driver/dashboard');
+      } else {
+        const err = await res.json();
+        toast.error(err.error === 'Driver not verified or inactive'
+          ? 'Аккаунт не активирован. Свяжитесь с админом.'
+          : 'Водитель не найден');
+      }
+    } catch {
+      toast.error('Ошибка входа');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900" />
+      <div className="absolute inset-0 grid-pattern opacity-30" />
+
+      <motion.div
+        animate={{ x: [0, 80, 0], y: [0, -40, 0] }}
+        transition={{ duration: 20, repeat: Infinity }}
+        className="absolute top-20 left-20 w-96 h-96 bg-green-500/20 rounded-full blur-3xl"
+      />
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative z-10 w-full max-w-md"
+      >
+        <div className="glass-card p-8">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+              <Car className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold mb-1 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500">
+              Кабинет водителя
+            </h1>
+            <p className="text-white/60 text-sm">Войдите по номеру телефона</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="label-field">
+                <Phone className="w-4 h-4 inline mr-2" />
+                Ваш телефон
+              </label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="input-field"
+                placeholder="+996 555 ..."
+                required
+                autoFocus
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full flex items-center justify-center gap-2"
+            >
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                <>
+                  <LogIn className="w-5 h-5" />
+                  Войти
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-6 p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 text-sm text-blue-300">
+            <strong>Демо:</strong> используйте номер существующего водителя из админки.
+            Например: <code className="px-1 rounded bg-white/10">+996 555 123 456</code>
+          </div>
+
+          <a href="/" className="block text-center mt-4 text-sm text-white/60 hover:text-primary-400">
+            ← На главную
+          </a>
+        </div>
+      </motion.div>
+    </div>
+  );
+}

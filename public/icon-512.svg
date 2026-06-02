@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="100" fill="url(#bg)"/>
+  <g transform="translate(96 150)">
+    <rect x="0" y="100" width="320" height="100" rx="20" fill="#fff"/>
+    <rect x="56" y="30" width="208" height="90" rx="16" fill="#fff"/>
+    <rect x="76" y="50" width="68" height="50" rx="6" fill="#0f172a"/>
+    <rect x="172" y="50" width="68" height="50" rx="6" fill="#0f172a"/>
+    <circle cx="80" cy="220" r="36" fill="#0f172a"/>
+    <circle cx="80" cy="220" r="14" fill="#fff"/>
+    <circle cx="240" cy="220" r="36" fill="#0f172a"/>
+    <circle cx="240" cy="220" r="14" fill="#fff"/>
+    <rect x="116" y="0" width="88" height="30" rx="4" fill="#0f172a"/>
+    <text x="160" y="22" text-anchor="middle" fill="#fbbf24" font-family="Arial" font-size="22" font-weight="bold">TAXI</text>
+  </g>
+</svg>

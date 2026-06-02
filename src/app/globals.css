@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-from: #0f172a;
+    --bg-to: #1e293b;
+    --text-color: #f8fafc;
+  }
+
+  html.light {
+    --bg-from: #f1f5f9;
+    --bg-to: #e2e8f0;
+    --text-color: #0f172a;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: linear-gradient(180deg, var(--bg-from) 0%, var(--bg-to) 100%);
+    color: var(--text-color);
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  html.light body {
+    background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  }
+
+  html.light .glass-card {
+    @apply bg-white/60 border-dark-200 backdrop-blur-xl;
+  }
+
+  html.light .input-field {
+    @apply bg-white/80 border-dark-200 text-dark-900 placeholder-dark-400 focus:bg-white;
+  }
+
+  html.light .label-field {
+    @apply text-dark-700;
+  }
+
+  html.light .grid-pattern {
+    background-image:
+      linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgb(15 23 42);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #f59e0b, #d97706);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #fbbf24, #f59e0b);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300
+           bg-gradient-to-r from-primary-500 to-primary-600
+           hover:from-primary-400 hover:to-primary-500
+           hover:scale-105 hover:shadow-lg hover:shadow-primary-500/50
+           active:scale-95 text-white;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300
+           bg-white/10 backdrop-blur-md border border-white/20
+           hover:bg-white/20 hover:scale-105
+           active:scale-95 text-white;
+  }
+
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-primary-600;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10
+           text-white placeholder-white/40
+           focus:outline-none focus:border-primary-500 focus:bg-white/10
+           transition-all duration-300;
+  }
+
+  .label-field {
+    @apply block text-sm font-medium text-white/80 mb-2;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-gradient-bg {
+    background-size: 200% 200%;
+    animation: gradient 8s ease infinite;
+  }
+
+  .glow {
+    box-shadow: 0 0 40px rgba(245, 158, 11, 0.3);
+  }
+
+  .grid-pattern {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+}
