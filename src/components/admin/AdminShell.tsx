@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, ClipboardList, Users, DollarSign,
-  Settings, LogOut, Menu, X, ChevronRight, Tag, Star
+  Settings, LogOut, Menu, X, ChevronRight, Tag, Star, Shield, Activity
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
@@ -20,6 +20,8 @@ const navItems = [
   { href: '/admin/dashboard/tariffs', label: 'Тарифы', icon: DollarSign },
   { href: '/admin/dashboard/promos', label: 'Промокоды', icon: Tag },
   { href: '/admin/dashboard/reviews', label: 'Отзывы', icon: Star },
+  { href: '/admin/dashboard/audit', label: 'Журнал', icon: Activity },
+  { href: '/admin/dashboard/security', label: 'Безопасность', icon: Shield },
   { href: '/admin/dashboard/settings', label: 'Настройки', icon: Settings },
 ];
 

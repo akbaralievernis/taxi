@@ -78,6 +78,9 @@ export default function OrderForm({ defaultFromCity = 'Бишкек', defaultToC
   const [promoChecking, setPromoChecking] = useState(false);
   const [promoApplied, setPromoApplied] = useState<{ code: string; discount: number } | null>(null);
 
+  // Bot mitigation timestamp — captured once when the form first renders.
+  const [formMountedAt] = useState<number>(() => Date.now());
+
   const finalPrice = promoApplied
     ? Math.round(estimatedPrice * (1 - promoApplied.discount / 100))
     : estimatedPrice;
@@ -155,10 +158,20 @@ export default function OrderForm({ defaultFromCity = 'Бишкек', defaultToC
           estimatedPrice: finalPrice,
           promoCode: promoApplied?.code,
           scheduledAt: data.whenType === 'now' ? new Date().toISOString() : data.scheduledAt,
+          // CAPTCHA fields (honeypot + time-check)
+          _hp: '',
+          _t: formMountedAt,
         }),
       });
 
-      if (!res.ok) throw new Error('Failed');
+      if (!res.ok) {
+        if (res.status === 429) {
+          toast.error('Слишком много запросов. Попробуйте через минуту.');
+        } else {
+          throw new Error('Failed');
+        }
+        return;
+      }
       const order = await res.json();
       setSuccess({ id: order.id, price: order.estimatedPrice });
       toast.success(t.order.success);
@@ -168,6 +181,7 @@ export default function OrderForm({ defaultFromCity = 'Бишкек', defaultToC
       setSubmitting(false);
     }
   };
+
   const resetForm = () => {
     setData({
       ...initialData,

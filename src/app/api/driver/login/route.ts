@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDrivers } from '@/lib/db';
 import { SignJWT } from 'jose';
 import { cookies } from 'next/headers';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+import { audit } from '@/lib/audit-log';
 
 const SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET ?? 'fallback-secret-for-dev-only-please-change'
@@ -12,6 +14,9 @@ function normalizePhone(p: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  const limited = checkRateLimit(req, { window: 5 * 60_000, max: 5, key: 'driver-login' });
+  if (limited) return limited;
+
   try {
     const { phone } = await req.json();
     if (!phone) {
@@ -40,6 +45,12 @@ export async function POST(req: NextRequest) {
       path: '/',
       maxAge: 60 * 60 * 24 * 30,
     });
+
+    audit({
+      actor: `driver:${driver.id}`,
+      action: 'driver.login.success',
+      ipAddress: getClientIp(req),
+    }, req);
 
     return NextResponse.json({ success: true, driver: { id: driver.id, name: driver.name } });
   } catch {
