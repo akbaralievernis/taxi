@@ -336,6 +336,233 @@
     backdrop-filter: blur(12px);
   }
 
+  /* ===== Liquid Metal aesthetic ===== */
+
+  /* Conic outline ring around an orb / button.
+     Starts grayscale, transitions to full color on hover.
+     Inspired by the CodePen reference (blue → purple → red → purple → blue). */
+  .liquid-metal-outline {
+    padding: 2px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from 180deg,
+      #3b82f6,
+      #a855f7,
+      #ec4899,
+      #a855f7,
+      #3b82f6
+    );
+    filter: grayscale(1) brightness(0.8);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    transition: filter 0.6s ease;
+  }
+
+  .group:hover .liquid-metal-outline,
+  .liquid-metal-outline.is-glow {
+    filter: grayscale(0) brightness(1.1);
+  }
+
+  /* Animated rotation for "active" orbs */
+  .liquid-metal-outline.is-rotating {
+    animation: lm-rotate 8s linear infinite;
+  }
+
+  @keyframes lm-rotate {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* ===== Liquid Metal pill button ===== */
+  .liquid-metal-btn {
+    /* Metallic gradient surface */
+    background:
+      linear-gradient(180deg, #4a4a4a 0%, #1a1a1a 60%, #000 100%);
+    box-shadow:
+      inset 0 2px 2px rgba(255, 255, 255, 0.35),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+      0 8px 24px -4px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s, box-shadow 0.3s, filter 0.3s;
+  }
+
+  /* Conic outline ring */
+  .liquid-metal-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from 180deg,
+      #3b82f6,
+      #a855f7,
+      #ec4899,
+      #a855f7,
+      #3b82f6
+    );
+    filter: grayscale(1) brightness(0.85);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    transition: filter 0.4s ease;
+    pointer-events: none;
+  }
+
+  .liquid-metal-btn:hover,
+  .liquid-metal-btn.is-glow {
+    box-shadow:
+      inset 0 2px 2px rgba(255, 255, 255, 0.45),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+      0 12px 36px -4px rgba(168, 85, 247, 0.4),
+      0 0 0 1px rgba(168, 85, 247, 0.2);
+  }
+
+  .liquid-metal-btn:hover::before,
+  .liquid-metal-btn.is-glow::before {
+    filter: grayscale(0) brightness(1.15);
+    animation: lm-rotate 6s linear infinite;
+  }
+
+  /* ===== Liquid Metal pill BAR (CodePen reference) =====
+     Horizontal dark pill with decorative icons + interactive metal orb.
+     Used as a premium showcase / CTA. */
+  .liquid-metal-bar {
+    --lm-icon: #65615f;
+    --lm-bg: #0a0a0a;
+    --lm-light: #444;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: clamp(2rem, 6vw, 7rem);
+    padding: 1.5rem 1.75rem 1.5rem 2.5rem;
+    width: 100%;
+    max-width: 720px;
+    background: linear-gradient(180deg, var(--lm-bg) 0%, #000 100%);
+    border-radius: 999px;
+    box-shadow:
+      inset 0 2px 0 0 var(--lm-light),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+      0 28px 80px -16px rgba(0, 0, 0, 0.65),
+      0 0 0 1px rgba(255, 255, 255, 0.04);
+  }
+
+  .liquid-metal-bar__icon {
+    flex-shrink: 0;
+    width: clamp(2.5rem, 5.5vw, 4.5rem);
+    fill: var(--lm-icon);
+    pointer-events: none;
+    transition: fill 0.5s, transform 0.5s;
+  }
+
+  .liquid-metal-bar__icon--lead { transform: rotate(70deg); }
+  .liquid-metal-bar__icon--trail { transform: rotate(180deg); }
+
+  .liquid-metal-bar:hover .liquid-metal-bar__icon {
+    fill: rgba(255, 255, 255, 0.45);
+  }
+
+  /* Big circular metal orb on the right end */
+  .liquid-metal-orb {
+    --orb-size: clamp(8rem, 16vw, 12rem);
+    position: relative;
+    flex-shrink: 0;
+    display: inline-grid;
+    place-items: center;
+    width: var(--orb-size);
+    height: var(--orb-size);
+    border-radius: 50%;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    color: var(--lm-icon);
+    text-decoration: none;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .liquid-metal-orb:hover { transform: scale(1.05); }
+  .liquid-metal-orb:active { transform: scale(0.97); }
+
+  /* Conic gradient outline ring */
+  .liquid-metal-orb__ring {
+    position: absolute;
+    inset: 0;
+    padding: 4px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from 180deg,
+      #2563eb,
+      #a855f7,
+      #ef4444,
+      #a855f7,
+      #2563eb
+    );
+    filter: grayscale(1) brightness(0.85);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    transition: filter 0.6s ease;
+    pointer-events: none;
+  }
+
+  .liquid-metal-orb:hover .liquid-metal-orb__ring {
+    filter: grayscale(0) brightness(1.15);
+    animation: lm-rotate 8s linear infinite;
+  }
+
+  /* WebGL sphere inside the ring */
+  .liquid-metal-orb__sphere {
+    position: relative;
+    width: calc(var(--orb-size) - 14px);
+    height: calc(var(--orb-size) - 14px);
+    border-radius: 50%;
+    overflow: hidden;
+    background: radial-gradient(circle at 30% 20%, #555 0%, #1a1a1a 60%, #000 100%);
+    box-shadow:
+      inset 0 4px 6px rgba(255, 255, 255, 0.25),
+      inset 0 -4px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  .liquid-metal-orb__sphere > * {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Arrow centered over the orb */
+  .liquid-metal-orb__arrow {
+    position: absolute;
+    width: 32%;
+    fill: rgba(255, 255, 255, 0.55);
+    transform: rotate(-45deg);
+    pointer-events: none;
+    transition: fill 0.4s, transform 0.4s;
+    z-index: 2;
+  }
+
+  .liquid-metal-orb:hover .liquid-metal-orb__arrow {
+    fill: rgba(255, 255, 255, 0.95);
+    transform: rotate(-45deg) translate(-4px, -4px);
+  }
+
   .text-ink { color: rgb(var(--ink)); }
   .text-ink-muted { color: rgb(var(--ink-muted)); }
   .text-ink-subtle { color: rgb(var(--ink-subtle)); }

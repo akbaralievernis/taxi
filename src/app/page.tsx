@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import PWARegister from '@/components/PWARegister';
 import JsonLd from '@/components/seo/JsonLd';
 import FloatingCTA from '@/components/ui/FloatingCTA';
+import PremiumCTA from '@/components/PremiumCTA';
 
 // Lazy loading heavy sections below the fold for performance optimization
 const Tariffs = dynamic(() => import('@/components/Tariffs'), {
@@ -40,6 +41,7 @@ export default function HomePage() {
       <TrustStats />
       <Features />
       <Tariffs />
+      <PremiumCTA />
       <Routes />
       <HowItWorks />
       <OrderSection />
