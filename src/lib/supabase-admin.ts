@@ -7,7 +7,10 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
  */
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Supabase renamed service_role_key → secret_key. Support both names.
+const serviceKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_SECRET_KEY;
 
 let cached: SupabaseClient | null = null;
 
