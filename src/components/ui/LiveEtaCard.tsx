@@ -64,10 +64,10 @@ export default function LiveEtaCard({
       {/* Driver & Car info */}
       <div className="flex gap-3 items-center z-10">
         <div className="relative">
-          <div className="w-11 h-11 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-indigo-400 text-sm shadow-sm">
+          <div className="w-11 h-11 rounded-full bg-surface-muted border border-border flex items-center justify-center font-bold text-indigo-400 text-sm shadow-sm">
             АБ
           </div>
-          <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900 flex items-center justify-center">
+          <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-border flex items-center justify-center">
             <ShieldCheck className="w-2 h-2 text-white" />
           </span>
         </div>
@@ -75,26 +75,26 @@ export default function LiveEtaCard({
           <div className="flex items-center gap-1">
             <span className="text-sm font-semibold text-white truncate">{driverName}</span>
           </div>
-          <span className="text-[11px] text-slate-400 truncate flex items-center gap-1">
-            <Car className="w-3 h-3 text-slate-400 shrink-0" />
+          <span className="text-[11px] text-ink-subtle truncate flex items-center gap-1">
+            <Car className="w-3 h-3 text-ink-subtle shrink-0" />
             {carInfo}
           </span>
         </div>
       </div>
 
       {/* Separator */}
-      <div className="h-[1px] bg-slate-800/60 w-full" />
+      <div className="h-[1px] bg-surface-muted/60 w-full" />
 
       {/* Progress & Countdown */}
       <div className="flex flex-col gap-2 z-10">
         <div className="flex justify-between items-baseline">
-          <span className="text-xs text-slate-400 font-medium">Водитель будет у вас через</span>
+          <span className="text-xs text-ink-subtle font-medium">Водитель будет у вас через</span>
           <span className="text-base font-bold text-white tabular-nums">
             ~ {eta} {eta === 1 ? 'минуту' : eta < 5 ? 'минуты' : 'минут'}
           </span>
         </div>
         {/* Dynamic progress bar */}
-        <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden relative">
+        <div className="h-1.5 bg-surface-muted rounded-full overflow-hidden relative">
           <motion.div
             className="h-full bg-gradient-to-r from-primary-500 via-purple-500 to-indigo-400 rounded-full"
             style={{ width: `${progress}%` }}
@@ -104,7 +104,7 @@ export default function LiveEtaCard({
       </div>
 
       {/* Footer Trip Info */}
-      <div className="flex items-center justify-between text-[11px] text-slate-400 pt-0.5 z-10">
+      <div className="flex items-center justify-between text-[11px] text-ink-subtle pt-0.5 z-10">
         <span className="flex items-center gap-1">
           <MapPin className="w-3 h-3 text-indigo-400" />
           Бишкек Парк

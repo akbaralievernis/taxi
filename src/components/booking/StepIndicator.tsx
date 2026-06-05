@@ -13,7 +13,7 @@ export default function StepIndicator({ currentStep, steps }: StepIndicatorProps
     <div className="w-full py-4 mb-8">
       <div className="flex items-center justify-between relative max-w-xl mx-auto px-4">
         {/* Connecting Progress Line */}
-        <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-slate-800/80 -translate-y-1/2 z-0" />
+        <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-surface-muted/80 -translate-y-1/2 z-0" />
         <motion.div
           className="absolute top-1/2 left-0 h-[2px] bg-gradient-to-r from-primary-500 to-indigo-400 -translate-y-1/2 z-0"
           initial={{ width: '0%' }}
@@ -36,8 +36,8 @@ export default function StepIndicator({ currentStep, steps }: StepIndicatorProps
                   isCompleted
                     ? 'bg-gradient-to-r from-primary-500 to-indigo-500 border-transparent text-white shadow-glow-sm'
                     : isActive
-                    ? 'bg-slate-900 border-primary-500 text-primary-400 shadow-neon-indigo'
-                    : 'bg-slate-950 border-slate-800 text-slate-500'
+                    ? 'bg-surface-elevated border-primary-500 text-primary-400 shadow-neon-indigo'
+                    : 'bg-surface border-border text-ink-subtle'
                 }`}
                 animate={{
                   scale: isActive ? 1.15 : 1,
@@ -52,7 +52,7 @@ export default function StepIndicator({ currentStep, steps }: StepIndicatorProps
               </motion.div>
               <span
                 className={`absolute top-11 text-[10px] md:text-xs font-semibold whitespace-nowrap transition-colors duration-300 ${
-                  isActive ? 'text-primary-400 font-bold' : isCompleted ? 'text-slate-300' : 'text-slate-500'
+                  isActive ? 'text-primary-400 font-bold' : isCompleted ? 'text-ink-muted' : 'text-ink-subtle'
                 }`}
               >
                 {label}

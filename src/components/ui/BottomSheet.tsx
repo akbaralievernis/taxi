@@ -57,7 +57,7 @@ export default function BottomSheet({ isOpen, onClose, children, title }: Bottom
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 240 }}
-            className="relative w-full rounded-t-3xl border-t border-slate-900 bg-slate-950 p-4.5 pb-8 shadow-depth-md flex flex-col focus:outline-none max-h-[85vh] z-10 overflow-y-auto"
+            className="relative w-full rounded-t-3xl border-t border-border bg-surface p-4.5 pb-8 shadow-depth-md flex flex-col focus:outline-none max-h-[85vh] z-10 overflow-y-auto"
             style={{
               paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))',
             }}
@@ -77,7 +77,7 @@ export default function BottomSheet({ isOpen, onClose, children, title }: Bottom
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1 rounded-lg bg-slate-900 border border-slate-850 text-slate-500 hover:text-white transition"
+                className="p-1 rounded-lg bg-surface-elevated border border-slate-850 text-ink-subtle hover:text-ink transition"
               >
                 <X className="w-4.5 h-4.5" />
               </button>

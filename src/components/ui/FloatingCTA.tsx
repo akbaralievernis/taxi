@@ -33,12 +33,12 @@ export default function FloatingCTA() {
           style={{ bottom: 'calc(64px + env(safe-area-inset-bottom))' }}
         >
           <div className="px-4 py-2">
-            <div className="glass-3 shadow-depth-md flex items-center gap-3 p-2 rounded-2xl border border-slate-800">
+            <div className="glass-3 shadow-depth-md flex items-center gap-3 p-2 rounded-2xl border border-border">
               {/* Phone quick-call */}
               <a
                 href="tel:+996555000000"
                 id="mobile-cta-call"
-                className="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-900 border border-slate-850 flex items-center justify-center text-slate-400 hover:text-white transition active:scale-95 shadow-sm"
+                className="flex-shrink-0 w-12 h-12 rounded-xl bg-surface-elevated border border-slate-850 flex items-center justify-center text-ink-subtle hover:text-ink transition active:scale-95 shadow-sm"
                 aria-label="Позвонить"
               >
                 <Phone className="w-4.5 h-4.5" />

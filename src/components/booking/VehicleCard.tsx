@@ -102,7 +102,7 @@ export default function VehicleCard({
           ? cls === 'business'
             ? 'bg-gold-500/10 border-gold-500/80 shadow-glow-gold'
             : 'bg-primary-500/10 border-primary-500/80 shadow-glow-sm'
-          : 'bg-slate-950/40 border-slate-800/80 hover:border-slate-700/60 hover:bg-slate-900/20'
+          : 'bg-surface/40 border-border/80 hover:border-border/60 hover:bg-surface-elevated/20'
       }`}
     >
       {/* Ribbon tags for special classes */}
@@ -119,7 +119,7 @@ export default function VehicleCard({
           ? cls === 'business'
             ? 'text-gold-400'
             : 'text-primary-400'
-          : 'text-slate-500'
+          : 'text-ink-subtle'
       }`}>
         {CAR_SVGS[cls]}
       </div>
@@ -127,12 +127,12 @@ export default function VehicleCard({
       {/* Name and description details */}
       <div className="flex flex-col mt-4">
         <span className="text-base font-bold text-white tracking-tight">{name}</span>
-        <span className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">{desc}</span>
+        <span className="text-xs text-ink-subtle mt-1 line-clamp-2 leading-relaxed">{desc}</span>
       </div>
 
       {/* Capacity Statistics & Price */}
       <div className="flex items-center justify-between mt-4">
-        <div className="flex gap-2.5 text-slate-500 text-[10px] font-semibold">
+        <div className="flex gap-2.5 text-ink-subtle text-[10px] font-semibold">
           <span className="flex items-center gap-1">
             <Users className="w-3.5 h-3.5" />
             {stats.passengers}
@@ -150,12 +150,12 @@ export default function VehicleCard({
               ? cls === 'business'
                 ? 'text-gold-400'
                 : 'text-primary-400'
-              : 'text-slate-300'
+              : 'text-ink-muted'
           }`}>
             {price} сом
           </span>
         ) : (
-          <span className="text-xs text-slate-500">Выбор</span>
+          <span className="text-xs text-ink-subtle">Выбор</span>
         )}
       </div>
     </motion.button>

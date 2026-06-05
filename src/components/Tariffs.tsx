@@ -123,7 +123,7 @@ export default function Tariffs() {
 
                   <a
                     href="#order"
-                    className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl bg-surface-elevated hover:bg-gradient-to-r hover:from-primary-500 hover:to-purple-500 hover:text-white text-ink-muted transition-all text-sm font-semibold group/btn"
+                    className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl bg-surface-elevated hover:bg-gradient-to-r hover:from-primary-500 hover:to-purple-500 hover:text-ink text-ink-muted transition-all text-sm font-semibold group/btn"
                   >
                     {t.tariffs.orderBtn}
                     <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1" />

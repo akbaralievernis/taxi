@@ -3,40 +3,44 @@
 @tailwind utilities;
 
 @layer base {
-  /* ===== СВЕТЛАЯ ТЕМА (по умолчанию) ===== */
+  /* ===== СВЕТЛАЯ ТЕМА (по умолчанию) =====
+     Высокий контраст: основной текст — глубокий синевато-чёрный (slate-950),
+     приглушённый — slate-700, очень приглушённый — slate-500. */
   :root {
     --surface: 255 255 255;
     --surface-elevated: 248 250 252;
     --surface-muted: 241 245 249;
 
-    --ink: 15 23 42;
-    --ink-muted: 51 65 85;
-    --ink-subtle: 100 116 139;
+    --ink: 2 6 23;          /* slate-950 — почти чёрный */
+    --ink-muted: 30 41 59;  /* slate-800 — отличный read-text */
+    --ink-subtle: 71 85 105; /* slate-600 — secondary info */
 
     --border: 226 232 240;
     --border-strong: 203 213 225;
 
-    --bg-from: #f8fafc;
-    --bg-to: #eef2ff;
-    --bg-mesh-opacity: 0.6;
+    --bg-from: #f5f7fb;
+    --bg-to: #eaeefc;
+    --bg-mesh-opacity: 0.5;
 
     --shadow-color: 0 0 0;
     --glass-bg: 255 255 255;
     --glass-border: 226 232 240;
   }
 
-  /* ===== ТЁМНАЯ ТЕМА ===== */
+  /* ===== ТЁМНАЯ ТЕМА =====
+     Высокий контраст: основной текст — чисто белый (#fff),
+     приглушённый — slate-200, очень приглушённый — slate-400. */
   .dark {
     --surface: 5 6 15;
     --surface-elevated: 12 14 28;
     --surface-muted: 22 25 43;
 
-    --ink: 248 250 252;
-    --ink-muted: 203 213 225;
-    --ink-subtle: 148 163 184;
+    --ink: 255 255 255;        /* чистый белый — максимальный контраст */
+    --ink-muted: 226 232 240;  /* slate-200 — читаемый при любом фоне */
+    --ink-subtle: 148 163 184; /* slate-400 */
 
-    --border: 24 28 47;
-    --border-strong: 38 44 72;
+    --border: 30 36 58;
+    --border-strong: 51 65 85;
 
     --bg-from: #050508;
     --bg-to: #0c0d15;
@@ -44,7 +48,7 @@
 
     --shadow-color: 0 0 0;
     --glass-bg: 12 14 28;
-    --glass-border: 24 28 47;
+    --glass-border: 30 36 58;
   }
 
   * {

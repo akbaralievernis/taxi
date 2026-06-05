@@ -17,7 +17,7 @@ export default function BottomNav() {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-slate-950/85 backdrop-blur-xl border-t border-slate-900 shadow-depth-md">
+    <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-surface/85 backdrop-blur-xl border-t border-border shadow-depth-md">
       {/* Safe bottom area padding */}
       <nav
         className="flex items-center justify-around h-16 px-4"
@@ -37,7 +37,7 @@ export default function BottomNav() {
               href={item.href}
               className={cn(
                 'flex flex-col items-center justify-center flex-1 h-full relative transition-colors py-1',
-                isActive ? 'text-primary-400' : 'text-slate-500'
+                isActive ? 'text-primary-400' : 'text-ink-subtle'
               )}
             >
               {/* Icon with scaling active states */}

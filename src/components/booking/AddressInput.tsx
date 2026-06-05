@@ -139,7 +139,7 @@ export default function AddressInput({
   return (
     <div ref={containerRef} className="relative w-full">
       <div className="flex justify-between items-baseline mb-2">
-        <label className="text-sm font-semibold text-slate-300 flex items-center gap-1.5">
+        <label className="text-sm font-semibold text-ink-muted flex items-center gap-1.5">
           <MapPin className={`w-4 h-4 ${iconColor}`} />
           {label}
         </label>
@@ -163,19 +163,18 @@ export default function AddressInput({
           placeholder={placeholder}
           autoComplete="off"
           className={`input-field pr-10 border transition-all ${
-            isValid ? 'border-emerald-500/20 focus:border-emerald-500/40' : 'border-slate-800 focus:border-primary-500'
+            isValid ? 'border-emerald-500/20 focus:border-emerald-500/40' : 'border-border focus:border-primary-500'
           }`}
-          style={{ background: 'rgba(12, 14, 28, 0.45)' }}
         />
 
         {/* Action icons right-aligned */}
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-          {loading && <Loader2 className="w-4 h-4 text-slate-500 animate-spin" />}
+          {loading && <Loader2 className="w-4 h-4 text-ink-subtle animate-spin" />}
           {query && (
             <button
               type="button"
               onClick={handleClear}
-              className="p-1 rounded-md text-slate-500 hover:text-white hover:bg-slate-800/50 transition-colors"
+              className="p-1 rounded-md text-ink-subtle hover:text-ink hover:bg-surface-muted/50 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -190,7 +189,7 @@ export default function AddressInput({
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
-            className="absolute left-0 right-0 z-30 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-slate-800/80 bg-slate-950 p-2 shadow-depth-md backdrop-blur-3xl"
+            className="absolute left-0 right-0 z-30 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-border/80 bg-surface p-2 shadow-depth-md backdrop-blur-3xl"
           >
             {suggestions.map((raw, idx) => {
               const s = normalizeSuggestion(raw);
@@ -199,14 +198,14 @@ export default function AddressInput({
                   <button
                     type="button"
                     onClick={() => selectSuggestion(raw)}
-                    className="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-900/60 transition flex items-start gap-3 group"
+                    className="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-surface-elevated/60 transition flex items-start gap-3 group"
                   >
                     <MapPin className="w-4 h-4 text-primary-500 mt-0.5 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-white group-hover:text-primary-300 transition-colors truncate">
+                      <div className="text-sm font-semibold text-ink group-hover:text-primary-300 transition-colors truncate">
                         {s.name}
                       </div>
-                      <div className="text-xs text-slate-400 truncate">{s.fullAddress}</div>
+                      <div className="text-xs text-ink-subtle truncate">{s.fullAddress}</div>
                     </div>
                     {s.city && (
                       <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary-500/10 text-primary-300 shrink-0">
@@ -217,7 +216,7 @@ export default function AddressInput({
                 </li>
               );
             })}
-            <li className="mt-1 px-3 py-1 text-[10px] text-slate-500 text-center border-t border-slate-800/50 pt-2">
+            <li className="mt-1 px-3 py-1 text-[10px] text-ink-subtle text-center border-t border-border/50 pt-2">
               Данные: OpenStreetMap · Photon
             </li>
           </motion.ul>
