@@ -157,69 +157,178 @@
     @apply glass-3 rounded-2xl;
   }
 
-  /* Кнопки */
-  .btn-primary {
-    @apply relative px-6 py-3 rounded-xl font-semibold transition-all duration-300
-           bg-gradient-to-r from-primary-500 to-purple-600
-           hover:from-primary-400 hover:to-purple-500
-           hover:scale-[1.02] hover:shadow-glow
-           active:scale-[0.98] text-white
-           shadow-glow-sm
-           overflow-hidden;
-  }
-
-  .btn-primary::before {
-    content: '';
-    @apply absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0;
-    transform: translateX(-100%);
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .btn-primary:hover::before {
-    transform: translateX(100%);
-  }
-
-  .btn-secondary {
-    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300
-           bg-surface/60 backdrop-blur-md border border-border
-           hover:bg-surface hover:border-primary-400/50 hover:scale-[1.02]
-           active:scale-[0.98]
-           text-ink;
-  }
-
-  .btn-accent {
-    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300
-           bg-gradient-to-r from-mint-500 to-accent-500
-           hover:from-mint-400 hover:to-accent-400
-           hover:scale-[1.02] hover:shadow-glow-accent
-           active:scale-[0.98] text-white;
-  }
-
-  .btn-ghost {
-    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300
-           bg-transparent border border-border/80
-           hover:bg-surface/10 hover:border-primary-500/40 hover:scale-[1.02]
-           active:scale-[0.98] text-ink;
-  }
-
+  /* ===== УНИФИЦИРОВАННЫЕ LIQUID-METAL КНОПКИ =====
+     Все btn-* теперь имеют металлическую поверхность с conic-gradient
+     outline кольцом, которое светится при наведении.
+     Базовый стиль — общий для всех вариантов. */
+  .btn-primary,
+  .btn-secondary,
+  .btn-accent,
+  .btn-ghost,
   .btn-premium {
-    @apply relative px-6 py-3 rounded-xl font-semibold transition-all duration-300
-           bg-gradient-to-r from-gold-600 to-amber-500
-           hover:from-gold-500 hover:to-amber-400
-           hover:scale-[1.02] hover:shadow-glow-gold
-           active:scale-[0.98] text-white
-           overflow-hidden;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1;
+    color: #fff;
+    cursor: pointer;
+    isolation: isolate;
+    overflow: hidden;
+    border: 0;
+    transition:
+      transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.3s,
+      filter 0.3s;
+    /* Top inner highlight: thin gloss line */
+    box-shadow:
+      inset 0 2px 2px rgba(255, 255, 255, 0.4),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+      0 8px 24px -4px rgba(0, 0, 0, 0.6);
   }
 
+  /* Metallic surface — different gradient tints per variant */
+  .btn-primary {
+    background: linear-gradient(180deg, #4a4a4a 0%, #1a1a1a 60%, #000 100%);
+  }
+  .btn-secondary {
+    background: linear-gradient(180deg, #6b6b6b 0%, #2a2a2a 60%, #0a0a0a 100%);
+    color: #fff;
+  }
+  .btn-accent {
+    background: linear-gradient(180deg, #4a4a4a 0%, #1a1a1a 60%, #000 100%);
+  }
+  .btn-ghost {
+    background: linear-gradient(180deg, rgba(74, 74, 74, 0.8) 0%, rgba(26, 26, 26, 0.7) 60%, rgba(0, 0, 0, 0.85) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .btn-premium {
+    background: linear-gradient(180deg, #5a4a2a 0%, #2a1a08 60%, #100800 100%);
+  }
+
+  /* Conic gradient outline ring (visible state on hover) */
+  .btn-primary::before,
+  .btn-secondary::before,
+  .btn-accent::before,
+  .btn-ghost::before,
   .btn-premium::before {
     content: '';
-    @apply absolute inset-0 bg-gradient-to-r from-white/0 via-white/35 to-white/0;
-    transform: translateX(-100%);
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    position: absolute;
+    inset: 0;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from 180deg,
+      #6366f1,
+      #a855f7,
+      #ec4899,
+      #a855f7,
+      #6366f1
+    );
+    filter: grayscale(0.5) brightness(0.85);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    transition: filter 0.4s ease;
+    pointer-events: none;
   }
 
+  /* Variant-specific ring colors */
+  .btn-accent::before {
+    background: conic-gradient(from 180deg, #10b981, #06b6d4, #6366f1, #06b6d4, #10b981);
+  }
+  .btn-premium::before {
+    background: conic-gradient(from 180deg, #facc15, #f59e0b, #ec4899, #f59e0b, #facc15);
+  }
+  .btn-ghost::before {
+    background: conic-gradient(from 180deg, #94a3b8, #64748b, #6366f1, #64748b, #94a3b8);
+    filter: grayscale(0.8) brightness(0.7);
+  }
+
+  /* Inner top-gloss highlight overlay (subtle) */
+  .btn-primary::after,
+  .btn-secondary::after,
+  .btn-accent::after,
+  .btn-ghost::after,
+  .btn-premium::after {
+    content: '';
+    position: absolute;
+    inset: 1.5px;
+    border-radius: inherit;
+    background: radial-gradient(
+      ellipse at 50% -20%,
+      rgba(255, 255, 255, 0.22) 0%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Hover: glow + ring color appears */
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .btn-accent:hover,
+  .btn-ghost:hover,
+  .btn-premium:hover {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow:
+      inset 0 2px 2px rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+      0 12px 36px -4px rgba(168, 85, 247, 0.4),
+      0 0 0 1px rgba(168, 85, 247, 0.25);
+  }
+
+  .btn-accent:hover {
+    box-shadow:
+      inset 0 2px 2px rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+      0 12px 36px -4px rgba(16, 185, 129, 0.4),
+      0 0 0 1px rgba(16, 185, 129, 0.25);
+  }
+  .btn-premium:hover {
+    box-shadow:
+      inset 0 2px 2px rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+      0 12px 36px -4px rgba(250, 204, 21, 0.4),
+      0 0 0 1px rgba(250, 204, 21, 0.25);
+  }
+
+  .btn-primary:hover::before,
+  .btn-secondary:hover::before,
+  .btn-accent:hover::before,
+  .btn-ghost:hover::before,
   .btn-premium:hover::before {
-    transform: translateX(100%);
+    filter: grayscale(0) brightness(1.2);
+    animation: lm-rotate 6s linear infinite;
+  }
+
+  .btn-primary:active,
+  .btn-secondary:active,
+  .btn-accent:active,
+  .btn-ghost:active,
+  .btn-premium:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Children should render above the ::after gloss layer */
+  .btn-primary > *,
+  .btn-secondary > *,
+  .btn-accent > *,
+  .btn-ghost > *,
+  .btn-premium > * {
+    position: relative;
+    z-index: 1;
   }
 
   /* Градиентный текст */
@@ -442,16 +551,19 @@
     --lm-icon: #65615f;
     --lm-bg: #0a0a0a;
     --lm-light: #444;
+    --orb-size: clamp(4.5rem, 8vw, 6.5rem);
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: flex-end;
-    gap: clamp(2rem, 6vw, 7rem);
-    padding: 1.5rem 1.75rem 1.5rem 2.5rem;
+    gap: clamp(1.5rem, 5vw, 5rem);
+    padding: 0.75rem 0.85rem 0.75rem 2rem;
     width: 100%;
-    max-width: 720px;
+    max-width: 680px;
     background: linear-gradient(180deg, var(--lm-bg) 0%, #000 100%);
     border-radius: 999px;
+    /* Allow tall orb to overflow gracefully if needed */
+    min-height: calc(var(--orb-size) + 1.5rem);
     box-shadow:
       inset 0 2px 0 0 var(--lm-light),
       inset 0 -1px 0 rgba(255, 255, 255, 0.05),
@@ -461,7 +573,8 @@
 
   .liquid-metal-bar__icon {
     flex-shrink: 0;
-    width: clamp(2.5rem, 5.5vw, 4.5rem);
+    width: clamp(2rem, 4vw, 3rem);
+    height: clamp(2rem, 4vw, 3rem);
     fill: var(--lm-icon);
     pointer-events: none;
     transition: fill 0.5s, transform 0.5s;
@@ -474,9 +587,8 @@
     fill: rgba(255, 255, 255, 0.45);
   }
 
-  /* Big circular metal orb on the right end */
+  /* Big circular metal orb on the right end — uses bar's --orb-size */
   .liquid-metal-orb {
-    --orb-size: clamp(8rem, 16vw, 12rem);
     position: relative;
     flex-shrink: 0;
     display: inline-grid;
