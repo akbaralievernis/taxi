@@ -27,28 +27,27 @@
     --glass-border: 226 232 240;
   }
 
-  /* ===== ТЁМНАЯ ТЕМА =====
-     Высокий контраст: основной текст — чисто белый (#fff),
-     приглушённый — slate-200, очень приглушённый — slate-400. */
+  /* ===== ТЁМНАЯ ТЕМА — максимальный контраст =====
+     Все текстовые тона смещены к белому концу шкалы. */
   .dark {
-    --surface: 5 6 15;
-    --surface-elevated: 12 14 28;
-    --surface-muted: 22 25 43;
+    --surface: 8 10 22;
+    --surface-elevated: 18 22 42;
+    --surface-muted: 28 32 56;
 
-    --ink: 255 255 255;        /* чистый белый — максимальный контраст */
-    --ink-muted: 226 232 240;  /* slate-200 — читаемый при любом фоне */
-    --ink-subtle: 148 163 184; /* slate-400 */
+    --ink: 255 255 255;        /* чистый белый — заголовки, цифры */
+    --ink-muted: 241 245 249;  /* slate-100 — body-text, отлично читается */
+    --ink-subtle: 203 213 225; /* slate-300 — подписи, метки */
 
-    --border: 30 36 58;
-    --border-strong: 51 65 85;
+    --border: 42 50 80;
+    --border-strong: 64 76 110;
 
-    --bg-from: #050508;
-    --bg-to: #0c0d15;
-    --bg-mesh-opacity: 0.35;
+    --bg-from: #060814;
+    --bg-to: #0e1124;
+    --bg-mesh-opacity: 0.45;
 
     --shadow-color: 0 0 0;
-    --glass-bg: 12 14 28;
-    --glass-border: 30 36 58;
+    --glass-bg: 18 22 42;
+    --glass-border: 42 50 80;
   }
 
   * {
@@ -122,11 +121,11 @@
       0 1px 0 0 rgba(255, 255, 255, 0.03) inset;
   }
   .dark .glass-2 {
-    background: rgba(12, 14, 28, 0.78);
-    border-color: rgba(99, 102, 241, 0.22);
+    background: rgba(18, 22, 42, 0.92);
+    border-color: rgba(99, 102, 241, 0.32);
     box-shadow:
-      0 4px 24px -1px rgba(0, 0, 0, 0.5),
-      0 1px 0 0 rgba(255, 255, 255, 0.05) inset;
+      0 6px 28px -2px rgba(0, 0, 0, 0.55),
+      0 1px 0 0 rgba(255, 255, 255, 0.08) inset;
   }
 
   .glass-3 {
@@ -139,11 +138,11 @@
       0 1px 0 0 rgba(255, 255, 255, 0.05) inset;
   }
   .dark .glass-3 {
-    background: rgba(12, 14, 28, 0.92);
-    border-color: rgba(99, 102, 241, 0.3);
+    background: rgba(18, 22, 42, 0.97);
+    border-color: rgba(99, 102, 241, 0.4);
     box-shadow:
-      0 8px 32px -2px rgba(0, 0, 0, 0.55),
-      0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
+      0 10px 36px -2px rgba(0, 0, 0, 0.6),
+      0 1px 0 0 rgba(255, 255, 255, 0.1) inset;
   }
 
   .glass-frosted {
@@ -335,15 +334,16 @@
     z-index: 1;
   }
 
-  /* Градиентный текст — высокий контраст в обеих темах */
+  /* ===== Градиентный текст — НЕОН и максимальная яркость ===== */
   .gradient-text {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #4f46e5 0%, #9333ea 50%, #0891b2 100%);
+    background-image: linear-gradient(135deg, #4338ca 0%, #7e22ce 50%, #0e7490 100%);
   }
 
   .dark .gradient-text {
-    /* Brighter cyan + magenta + sky — pops against deep navy backgrounds */
-    background-image: linear-gradient(135deg, #a5b4fc 0%, #e9d5ff 50%, #67e8f9 100%);
+    /* Neon-bright: indigo-400 → purple-400 → cyan-400 with extra saturation */
+    background-image: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #22d3ee 100%);
+    filter: brightness(1.15) saturate(1.15);
   }
 
   .gradient-text-purple {

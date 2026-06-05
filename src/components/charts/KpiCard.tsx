@@ -54,26 +54,28 @@ export default function KpiCard({
         className
       )}
     >
+      {/* Decorative orb sits BEHIND content (z:-1) so text stays sharp */}
       <div
-        className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-30 group-hover:opacity-60 transition-opacity"
+        className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-25 group-hover:opacity-45 transition-opacity z-0"
         style={{ background: color }}
       />
 
-      <div className="relative">
-        <div className="flex items-start justify-between mb-3">
+      <div className="relative z-10">
+        <div className="flex items-start justify-between mb-4">
+          {/* Bigger icon tile with solid colored backdrop for max visibility */}
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center"
-            style={{ background: `${color}25`, color }}
+            className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
+            style={{ background: `${color}40`, color: color, boxShadow: `0 4px 12px ${color}33` }}
           >
             {icon}
           </div>
           {trend !== null && (
             <div
               className={cn(
-                'flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold',
+                'flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold',
                 trendUp
-                  ? 'bg-mint-500/10 text-mint-600 dark:text-mint-400'
-                  : 'bg-pink-500/10 text-pink-600 dark:text-pink-400'
+                  ? 'bg-mint-500/20 text-mint-700 dark:text-mint-300 border border-mint-500/40'
+                  : 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border border-pink-500/40'
               )}
             >
               {trendUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
@@ -82,10 +84,10 @@ export default function KpiCard({
           )}
         </div>
 
-        <div className="text-sm font-semibold text-ink-muted mb-1.5">{label}</div>
-        <div className="text-3xl md:text-4xl font-bold text-ink tracking-tight">
+        <div className="text-sm font-semibold text-ink-muted mb-1.5 uppercase tracking-wider">{label}</div>
+        <div className="text-3xl md:text-4xl font-extrabold text-ink tracking-tight">
           <AnimatedCounter to={value} decimals={decimals} />
-          {unit && <span className="text-base font-semibold text-ink-subtle ml-1.5">{unit}</span>}
+          {unit && <span className="text-base font-bold text-ink-subtle ml-1.5">{unit}</span>}
         </div>
 
         {sparkData && sparkData.length > 1 && (

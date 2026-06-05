@@ -80,9 +80,9 @@ export default function RevenueChart({ data, height = 240, className, format = (
             <text
               x={padding.left - 8}
               y={y + 4}
-              fontSize="11"
+              fontSize="12" fontWeight="600"
               fill="currentColor"
-              opacity="0.85"
+              opacity="0.95"
               textAnchor="end"
             >
               {format(value)}
@@ -100,9 +100,9 @@ export default function RevenueChart({ data, height = 240, className, format = (
             key={i}
             x={padding.left + i * stepX}
             y={height - padding.bottom + 16}
-            fontSize="11"
+            fontSize="12" fontWeight="600"
             fill="currentColor"
-            opacity="0.85"
+            opacity="0.95"
             textAnchor="middle"
           >
             {d.label}
