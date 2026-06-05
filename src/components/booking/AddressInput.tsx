@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, X, Check, Loader2 } from 'lucide-react';
-import { searchAddresses, AddressSuggestion } from '@/lib/integrations/maps';
+import { searchAddresses, AddressSuggestion as LocalSuggestion } from '@/lib/integrations/maps';
 
 interface AddressInputProps {
   label: string;
@@ -12,6 +12,28 @@ interface AddressInputProps {
   onChange: (val: string) => void;
   placeholder?: string;
   iconColor?: string;
+  /** Optional callback receiving full geocoded data (with lat/lon) */
+  onSelect?: (data: { fullAddress: string; lat?: number; lon?: number; city?: string }) => void;
+}
+
+interface RemoteSuggestion {
+  name: string;
+  fullAddress: string;
+  city?: string;
+  lat: number;
+  lon: number;
+  type?: string;
+}
+
+type Suggestion = RemoteSuggestion | (LocalSuggestion & { lat?: number; lon?: number; fullAddress?: string });
+
+function normalizeSuggestion(s: Suggestion): { name: string; fullAddress: string; city?: string; lat?: number; lon?: number } {
+  if ('fullAddress' in s && s.fullAddress) {
+    return { name: s.name, fullAddress: s.fullAddress, city: s.city, lat: s.lat, lon: s.lon };
+  }
+  // Local fallback shape
+  const local = s as LocalSuggestion;
+  return { name: local.name, fullAddress: local.fullName, city: local.city, lat: undefined, lon: undefined };
 }
 
 export default function AddressInput({
@@ -21,19 +43,21 @@ export default function AddressInput({
   onChange,
   placeholder = 'Укажите адрес...',
   iconColor = 'text-indigo-400',
+  onSelect,
 }: AddressInputProps) {
   const [query, setQuery] = useState(value);
-  const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   // Sync internal query state with external value changes
   useEffect(() => {
     setQuery(value);
   }, [value]);
 
-  // Fetch suggestions with a small debounce
+  // Fetch suggestions with debounce
   useEffect(() => {
     if (!open || query.length < 2) {
       setSuggestions([]);
@@ -41,18 +65,47 @@ export default function AddressInput({
     }
 
     setLoading(true);
-    const delayDebounce = setTimeout(async () => {
+    const debounce = setTimeout(async () => {
+      // Cancel previous in-flight request
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
       try {
-        const results = await searchAddresses(query, city);
-        setSuggestions(results);
-      } catch {
-        setSuggestions([]);
+        // Bias query toward the selected city — adds "city" to the search string
+        const biased = city && !query.toLowerCase().includes(city.toLowerCase())
+          ? `${query}, ${city}`
+          : query;
+        const url = `/api/geocode?q=${encodeURIComponent(biased)}`;
+        const res = await fetch(url, { signal: controller.signal });
+        const json = await res.json();
+        const remote: RemoteSuggestion[] = json.suggestions ?? [];
+
+        // If remote returned nothing, fall back to local popular addresses
+        if (remote.length === 0) {
+          const local = await searchAddresses(query, city);
+          setSuggestions(local);
+        } else {
+          // Prefer addresses in the selected city
+          const sorted = remote.sort((a, b) => {
+            const aMatch = (a.city ?? '').toLowerCase() === city.toLowerCase() ? -1 : 0;
+            const bMatch = (b.city ?? '').toLowerCase() === city.toLowerCase() ? -1 : 0;
+            return aMatch - bMatch;
+          });
+          setSuggestions(sorted);
+        }
+      } catch (e: any) {
+        if (e?.name !== 'AbortError') {
+          // Last-resort fallback
+          const local = await searchAddresses(query, city);
+          setSuggestions(local);
+        }
       } finally {
         setLoading(false);
       }
     }, 300);
 
-    return () => clearTimeout(delayDebounce);
+    return () => clearTimeout(debounce);
   }, [query, city, open]);
 
   // Close suggestions popover when clicking outside the input container
@@ -66,11 +119,13 @@ export default function AddressInput({
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
 
-  const selectSuggestion = (s: AddressSuggestion) => {
-    onChange(s.fullName);
-    setQuery(s.fullName);
+  const selectSuggestion = (raw: Suggestion) => {
+    const s = normalizeSuggestion(raw);
+    onChange(s.fullAddress);
+    setQuery(s.fullAddress);
     setSuggestions([]);
     setOpen(false);
+    onSelect?.(s);
   };
 
   const handleClear = () => {
@@ -106,6 +161,7 @@ export default function AddressInput({
           }}
           onFocus={() => setOpen(true)}
           placeholder={placeholder}
+          autoComplete="off"
           className={`input-field pr-10 border transition-all ${
             isValid ? 'border-emerald-500/20 focus:border-emerald-500/40' : 'border-slate-800 focus:border-primary-500'
           }`}
@@ -121,37 +177,49 @@ export default function AddressInput({
               onClick={handleClear}
               className="p-1 rounded-md text-slate-500 hover:text-white hover:bg-slate-800/50 transition-colors"
             >
-              <X className="w-4.5 h-4.5" />
+              <X className="w-4 h-4" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Autocomplete suggestions dropdown popover */}
+      {/* Autocomplete suggestions dropdown */}
       <AnimatePresence>
         {open && suggestions.length > 0 && (
           <motion.ul
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
-            className="absolute left-0 right-0 z-30 mt-2 max-h-60 overflow-y-auto rounded-2xl border border-slate-800/80 bg-slate-950 p-2 shadow-depth-md backdrop-blur-3xl"
+            className="absolute left-0 right-0 z-30 mt-2 max-h-72 overflow-y-auto rounded-2xl border border-slate-800/80 bg-slate-950 p-2 shadow-depth-md backdrop-blur-3xl"
           >
-            {suggestions.map((s, idx) => (
-              <li key={idx}>
-                <button
-                  type="button"
-                  onClick={() => selectSuggestion(s)}
-                  className="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-900/60 transition flex flex-col gap-0.5 group"
-                >
-                  <span className="text-sm font-semibold text-white group-hover:text-primary-300 transition-colors">
-                    {s.name}
-                  </span>
-                  <span className="text-xs text-slate-400 truncate">
-                    {s.fullName}
-                  </span>
-                </button>
-              </li>
-            ))}
+            {suggestions.map((raw, idx) => {
+              const s = normalizeSuggestion(raw);
+              return (
+                <li key={idx}>
+                  <button
+                    type="button"
+                    onClick={() => selectSuggestion(raw)}
+                    className="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-900/60 transition flex items-start gap-3 group"
+                  >
+                    <MapPin className="w-4 h-4 text-primary-500 mt-0.5 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-white group-hover:text-primary-300 transition-colors truncate">
+                        {s.name}
+                      </div>
+                      <div className="text-xs text-slate-400 truncate">{s.fullAddress}</div>
+                    </div>
+                    {s.city && (
+                      <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary-500/10 text-primary-300 shrink-0">
+                        {s.city}
+                      </span>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+            <li className="mt-1 px-3 py-1 text-[10px] text-slate-500 text-center border-t border-slate-800/50 pt-2">
+              Данные: OpenStreetMap · Photon
+            </li>
           </motion.ul>
         )}
       </AnimatePresence>
