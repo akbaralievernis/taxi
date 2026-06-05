@@ -74,7 +74,7 @@ export default function RevenueChart({ data, height = 240, className, format = (
               y2={y}
               stroke="currentColor"
               strokeWidth="1"
-              opacity="0.08"
+              opacity="0.18"
               strokeDasharray="2 3"
             />
             <text
@@ -82,7 +82,7 @@ export default function RevenueChart({ data, height = 240, className, format = (
               y={y + 4}
               fontSize="11"
               fill="currentColor"
-              opacity="0.5"
+              opacity="0.85"
               textAnchor="end"
             >
               {format(value)}
@@ -102,7 +102,7 @@ export default function RevenueChart({ data, height = 240, className, format = (
             y={height - padding.bottom + 16}
             fontSize="11"
             fill="currentColor"
-            opacity="0.5"
+            opacity="0.85"
             textAnchor="middle"
           >
             {d.label}

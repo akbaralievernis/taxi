@@ -82,10 +82,10 @@ export default function KpiCard({
           )}
         </div>
 
-        <div className="text-sm text-ink-muted mb-1">{label}</div>
-        <div className="text-3xl font-bold text-ink">
+        <div className="text-sm font-semibold text-ink-muted mb-1.5">{label}</div>
+        <div className="text-3xl md:text-4xl font-bold text-ink tracking-tight">
           <AnimatedCounter to={value} decimals={decimals} />
-          {unit && <span className="text-base font-semibold text-ink-muted ml-1">{unit}</span>}
+          {unit && <span className="text-base font-semibold text-ink-subtle ml-1.5">{unit}</span>}
         </div>
 
         {sparkData && sparkData.length > 1 && (

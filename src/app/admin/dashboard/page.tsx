@@ -40,7 +40,7 @@ const classColors: Record<string, string> = {
   comfort: '#6366f1',
   business: '#a855f7',
   minivan: '#10b981',
-  cargo: '#ec4899',
+  cargo: '#f472b6',
 };
 const classNames: Record<string, string> = {
   economy: 'Эконом',
