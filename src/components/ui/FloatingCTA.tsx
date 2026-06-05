@@ -38,7 +38,7 @@ export default function FloatingCTA() {
               <a
                 href="tel:+996555000000"
                 id="mobile-cta-call"
-                className="flex-shrink-0 w-12 h-12 rounded-xl bg-surface-elevated border border-slate-850 flex items-center justify-center text-ink-subtle hover:text-ink transition active:scale-95 shadow-sm"
+                className="flex-shrink-0 w-12 h-12 rounded-xl bg-surface-elevated border border-border flex items-center justify-center text-ink-muted hover:text-ink transition active:scale-95 shadow-sm"
                 aria-label="Позвонить"
               >
                 <Phone className="w-4.5 h-4.5" />

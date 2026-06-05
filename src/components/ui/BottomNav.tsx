@@ -9,6 +9,11 @@ import { cn } from '@/lib/utils';
 export default function BottomNav() {
   const pathname = usePathname();
 
+  // Hide on admin / driver pages — they have their own UI shells & don't need a public nav
+  if (pathname.startsWith('/admin') || pathname.startsWith('/driver')) {
+    return null;
+  }
+
   const navItems = [
     { href: '/', label: 'Главная', icon: Home },
     { href: '/#order', label: 'Заказать', icon: Sparkles, highlight: true },
@@ -17,7 +22,7 @@ export default function BottomNav() {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-surface/85 backdrop-blur-xl border-t border-border shadow-depth-md">
+    <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-surface/95 backdrop-blur-xl border-t border-border shadow-depth-md">
       {/* Safe bottom area padding */}
       <nav
         className="flex items-center justify-around h-16 px-4"

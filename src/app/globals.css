@@ -350,7 +350,11 @@
     background-image: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
   }
 
-  /* Поля ввода */
+  /* ===== Поля ввода — mobile-friendly =====
+     • min-height 48px = удобный touch-target (Apple HIG / Material)
+     • font-size 16px = НЕТ iOS zoom-on-tap (iOS зумит инпуты <16px)
+     • text-base гарантирует это
+     • усиленный border + контрастный текст в обеих темах */
   .input-field {
     @apply w-full px-4 py-3 rounded-xl
            border border-border
@@ -358,14 +362,34 @@
            focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20
            transition-all duration-200;
     background: rgba(var(--glass-bg), 0.5);
+    min-height: 48px;
+    font-size: 16px; /* prevents iOS auto-zoom on focus */
   }
 
   .dark .input-field {
-    background: rgba(15, 23, 42, 0.5);
+    background: rgba(15, 23, 42, 0.55);
   }
 
   .input-field:focus {
     background: rgba(var(--surface), 1);
+  }
+
+  /* Make all buttons touch-friendly by default on mobile */
+  .btn-primary,
+  .btn-secondary,
+  .btn-accent,
+  .btn-ghost,
+  .btn-premium {
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Form labels — slightly larger on mobile for legibility */
+  .label-field {
+    @apply block text-sm font-semibold text-ink mb-2;
+  }
+  @media (max-width: 640px) {
+    .label-field { font-size: 0.9375rem; }
   }
 
   .label-field {

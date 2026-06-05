@@ -111,13 +111,7 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 p-3 rounded-lg bg-accent-500/10 border border-accent-500/30 text-sm text-accent-600 dark:text-accent-300">
-            <strong>Демо-доступ:</strong><br />
-            Логин: <code className="px-1 rounded bg-surface-elevated">admin</code><br />
-            Пароль: <code className="px-1 rounded bg-surface-elevated">admin123</code>
-          </div>
-
-          <a href="/" className="block text-center mt-4 text-sm text-ink-muted hover:text-primary-500 transition">
+          <a href="/" className="block text-center mt-6 text-sm text-ink-muted hover:text-primary-500 transition">
             ← На главную
           </a>
         </div>
